@@ -12,23 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_marginTop="50dp"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/thumb"
-            android:layout_gravity="center"/>
-
         <TextView
-            android:layout_marginTop="50dp"
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="25dp"
             android:text="Entity Name"
+            android:background="@android:color/black"
+            android:textColor="@android:color/white"
             android:textAlignment="center"/>
 
         <ListView
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/listViewSpecific"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>

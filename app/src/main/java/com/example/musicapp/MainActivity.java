@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-    OkHttpClient client = new OkHttpClient();
+//    OkHttpClient client = new OkHttpClient();
     ArrayList<SongInfoModel> music = new ArrayList<>();
     ArrayList<SongInfoModel> movie = new ArrayList<>();
     ArrayList<SongInfoModel> podcast = new ArrayList<>();
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(viewPagerAdapter);
     }
 
-    public String getApiResponse(String URL) throws IOException {
+    public static String getApiResponse(String URL) throws IOException {
+        OkHttpClient client = new OkHttpClient();
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8){
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
-    public void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
+    public static void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
         try{
             JSONObject obj = new JSONObject(s);
             JSONArray arr = obj.getJSONArray("results"); // working
