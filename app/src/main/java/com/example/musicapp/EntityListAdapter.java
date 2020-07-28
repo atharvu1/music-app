@@ -1,6 +1,7 @@
 package com.example.musicapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -60,14 +61,16 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
         artistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(getContext(),DetailedActivity.class);
+                mContext.startActivity(i);
             }
         });
 
         albumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(getContext(),DetailedActivity.class);
+                mContext.startActivity(i);
             }
         });
 
