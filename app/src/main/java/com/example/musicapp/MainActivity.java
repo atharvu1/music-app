@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -14,6 +14,7 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.*;
 
@@ -22,53 +23,45 @@ public class MainActivity extends AppCompatActivity{
 
     private Button button;
     OkHttpClient client = new OkHttpClient();
-    ArrayList<SongInfoModel> music = new ArrayList<>();
-    ArrayList<SongInfoModel> movie = new ArrayList<>();
-    ArrayList<SongInfoModel> podcasts = new ArrayList<>();
+    List<SongInfoModel> music = new ArrayList<>();
+    List<SongInfoModel> movie = new ArrayList<>();
+    List<SongInfoModel> podcasts = new ArrayList<>();
 
+    ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button = (Button) findViewById(R.id.buttonJSON);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TextView t = (TextView)findViewById(R.id.jsonResponse);
-                t.setText("Button Clicked");
-                try {
+        try {
+            String movieURL = "https://itunes.apple.com/search?term=movie";
+            String musicURL = "https://itunes.apple.com/search?term=music";
+            String podcastsURL = "https://itunes.apple.com/search?term=podcast";
 
-                    String movieURL = "https://itunes.apple.com/search?term=movie";
-                    String musicURL = "https://itunes.apple.com/search?term=music";
-                    String podcastsURL = "https://itunes.apple.com/search?term=podcast";
+            String musicResponse = getApiResponse(musicURL);
+            String movieResponse = getApiResponse(movieURL);
+            String podcastsResponse = getApiResponse(podcastsURL);
 
-                    String musicResponse = getApiResponse(musicURL);
-                    String movieResponse = getApiResponse(movieURL);
-                    String podcastsResponse = getApiResponse(podcastsURL);
+            convertStringToObjectArray(music, musicResponse);
+            convertStringToObjectArray(movie, movieResponse);
+            convertStringToObjectArray(podcasts, podcastsResponse);
 
-                    convertStringToObjectArray(music, musicResponse);
-                    convertStringToObjectArray(movie, movieResponse);
-                    convertStringToObjectArray(podcasts, podcastsResponse);
+//            for(SongInfoModel s : music){
+//                System.out.println("-------------");
+//                System.out.println("Artist Name : " + s.artistName);
+//                System.out.println("Track Name : " + s.trackName);
+//                System.out.println("Collection Name : " + s.collectionName);
+//                System.out.println("Thumbnail URL : " + s.thumbnailURL);
+//            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
-                    //System.out.println(music);
-                    System.out.println(music);
+        listView = (ListView)findViewById(R.id.listView);
 
-                    for(SongInfoModel s : music){
-                        System.out.println("-------------");
-                        System.out.println("Artist Name : " + s.artistName);
-                        System.out.println("Track Name : " + s.trackName);
-                        System.out.println("Collection Name : " + s.collectionName);
-                        System.out.println("Thumbnail URL : " + s.thumbnailURL);
-                    }
+        SongAdapter adapter = new SongAdapter(this, R.layout.song_list, music);
 
-
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-        });
+        listView.setAdapter(adapter);
     }
 
     public String getApiResponse(String URL) throws  IOException{
@@ -90,7 +83,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    public void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
+    public void convertStringToObjectArray(List<SongInfoModel> mod, String s){
             try{
                 JSONObject obj = new JSONObject(s);
                 JSONArray arr = obj.getJSONArray("results"); // working
