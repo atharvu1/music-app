@@ -13,13 +13,19 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.json.*;
 
+
 public class MainActivity extends AppCompatActivity{
+
     private Button button;
     OkHttpClient client = new OkHttpClient();
-    //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy().Builder().permit
+    ArrayList<SongInfoModel> music = new ArrayList<>();
+    ArrayList<SongInfoModel> movie = new ArrayList<>();
+    ArrayList<SongInfoModel> podcasts = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,28 +40,25 @@ public class MainActivity extends AppCompatActivity{
 
                     String movieURL = "https://itunes.apple.com/search?term=movie";
                     String musicURL = "https://itunes.apple.com/search?term=music";
-                    String podcastURL = "https://itunes.apple.com/search?term=podcast";
+                    String podcastsURL = "https://itunes.apple.com/search?term=podcast";
 
-                    String URL = musicURL;
+                    String musicResponse = getApiResponse(musicURL);
+                    String movieResponse = getApiResponse(movieURL);
+                    String podcastsResponse = getApiResponse(podcastsURL);
 
-                    String s = getApiResponse(URL);
-                    //System.out.println(s);
-                    //t.setText(s);
-                    JSONObject obj = new JSONObject(s);
-                    JSONArray arr = obj.getJSONArray("results"); // working
-                    //t.setText();
-                    //JSONObject ob = new JSONObject(arr.getInt(0));
+                    convertStringToObjectArray(music, musicResponse);
+                    convertStringToObjectArray(movie, movieResponse);
+                    convertStringToObjectArray(podcasts, podcastsResponse);
 
-                    //System.out.println();
+                    //System.out.println(music);
+                    System.out.println(music);
 
-
-                    for(int i = 0; i < arr.length(); i++){
-                        String trackName = arr.getJSONObject(i).getString("trackName");
-                        String artistName = arr.getJSONObject(i).getString("artistName");
-                        String collectionName = arr.getJSONObject(i).getString("collectionName");
-                        System.out.println("---------------------------");
-                        System.out.println("Artist Name :" + artistName + "\nTrack Name :  " + trackName + "\nCollection Name : " + collectionName + "\n");
-                        System.out.println("---------------------------");
+                    for(SongInfoModel s : music){
+                        System.out.println("-------------");
+                        System.out.println("Artist Name : " + s.artistName);
+                        System.out.println("Track Name : " + s.trackName);
+                        System.out.println("Collection Name : " + s.collectionName);
+                        System.out.println("Thumbnail URL : " + s.thumbnailURL);
                     }
 
 
@@ -71,8 +74,7 @@ public class MainActivity extends AppCompatActivity{
     public String getApiResponse(String URL) throws  IOException{
 
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
-        if (SDK_INT > 8)
-        {
+        if (SDK_INT > 8){
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -87,5 +89,26 @@ public class MainActivity extends AppCompatActivity{
         return null;
     }
 
+
+    public void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
+            try{
+                JSONObject obj = new JSONObject(s);
+                JSONArray arr = obj.getJSONArray("results"); // working
+
+                for(int i = 0; i < arr.length(); i++){
+
+                    String trackName = arr.getJSONObject(i).getString("trackName");
+                    String artistName = arr.getJSONObject(i).getString("artistName");
+                    String collectionName = arr.getJSONObject(i).getString("collectionName");
+                    String thumbnailURL = arr.getJSONObject(i).getString("artworkUrl100");
+                    SongInfoModel model = new SongInfoModel(trackName, artistName, collectionName, thumbnailURL);
+                    mod.add(model);
+
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+    }
 
 }
