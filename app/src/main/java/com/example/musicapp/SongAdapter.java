@@ -1,6 +1,7 @@
 package com.example.musicapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -38,7 +39,7 @@ public class SongAdapter extends ArrayAdapter<SongInfoModel> {
         Button buttonAlbum = view.findViewById(R.id.buttonAlbumName);
         ImageView imageView = view.findViewById(R.id.imageView);
 
-        SongInfoModel songInfoModel = songList.get(position);
+        final SongInfoModel songInfoModel = songList.get(position);
 
         textView.setText(songInfoModel.getTrackName());
         buttonArtist.setText(songInfoModel.getArtistName());
@@ -54,6 +55,10 @@ public class SongAdapter extends ArrayAdapter<SongInfoModel> {
         buttonArtist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent i = new Intent(mCtx.getApplicationContext(), DetailedActivity.class);
+                String artist = songInfoModel.getArtistName();
+                i.putExtra("value", artist);
+                mCtx.startActivity(i);
 
             }
         });
@@ -61,7 +66,10 @@ public class SongAdapter extends ArrayAdapter<SongInfoModel> {
         buttonAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(mCtx.getApplicationContext(), DetailedActivity.class);
+                String album = songInfoModel.getCollectionName();
+                i.putExtra("value", album);
+                mCtx.startActivity(i);
             }
         });
 

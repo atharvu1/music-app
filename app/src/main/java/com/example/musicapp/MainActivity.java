@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -21,7 +19,7 @@ import org.json.*;
 
 public class MainActivity extends AppCompatActivity{
 
-    OkHttpClient client = new OkHttpClient();
+    //OkHttpClient client = new OkHttpClient(); // put inside method
     List<SongInfoModel> music = new ArrayList<>();
     List<SongInfoModel> movie = new ArrayList<>();
     List<SongInfoModel> podcasts = new ArrayList<>();
@@ -32,9 +30,9 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            String movieURL = "https://itunes.apple.com/search?term=movie";
-            String musicURL = "https://itunes.apple.com/search?term=music";
-            String podcastsURL = "https://itunes.apple.com/search?term=podcast";
+            String movieURL = "https://itunes.apple.com/search?term=movie&limit=10";
+            String musicURL = "https://itunes.apple.com/search?term=music&limit=10";
+            String podcastsURL = "https://itunes.apple.com/search?term=podcast&limit=10";
 
             String musicResponse = getApiResponse(musicURL);
             String movieResponse = getApiResponse(movieURL);
@@ -56,8 +54,8 @@ public class MainActivity extends AppCompatActivity{
         listView.setAdapter(adapter);
     }
 
-    public String getApiResponse(String URL) throws  IOException{
-
+    public static String getApiResponse(String URL) throws  IOException{
+        OkHttpClient client = new OkHttpClient();
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8){
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    public void convertStringToObjectArray(List<SongInfoModel> mod, String s){
+    public static void convertStringToObjectArray(List<SongInfoModel> mod, String s){
             try{
                 JSONObject obj = new JSONObject(s);
                 JSONArray arr = obj.getJSONArray("results"); // working
