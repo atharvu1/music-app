@@ -1,6 +1,7 @@
 package com.example.musicapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
         Button albumButton = convertView.findViewById(R.id.albumName);
         ImageView thumbnail = convertView.findViewById(R.id.thumbnail);
 
-        SongInfoModel songInfoModel = mEntityList.get(position);
+        final SongInfoModel songInfoModel = mEntityList.get(position);
 
         entityTextView.setText(songInfoModel.getTrackName());
         artistButton.setText(songInfoModel.getArtistName());
@@ -57,17 +59,32 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
             e.printStackTrace();
         }
 
+
+
+        if(mContext.getClass().getSimpleName().equals("DetailedActivity")){
+            artistButton.setEnabled(false);
+            albumButton.setEnabled(false);
+        }
+
         artistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(mContext.getApplicationContext(), DetailedActivity.class);
+                String artist = songInfoModel.getArtistName();
+                i.putExtra("value", artist);
+                i.putExtra("title","Artist Tracks");
+                mContext.startActivity(i);
             }
         });
 
         albumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(mContext.getApplicationContext(), DetailedActivity.class);
+                String album = songInfoModel.getCollectionName();
+                i.putExtra("value", album);
+                i.putExtra("title","Album Tracks");
+                mContext.startActivity(i);
             }
         });
 
