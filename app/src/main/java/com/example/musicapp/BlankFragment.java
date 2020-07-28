@@ -26,13 +26,13 @@ public class BlankFragment extends Fragment {
     LayoutInflater mLayoutInflater;
     ViewGroup mContainer;
     ListView listView;
-    ArrayList<String> dummyList = new ArrayList<>();
+    ArrayList<SongInfoModel> entityList = new ArrayList<>();
 
-    public BlankFragment(ArrayList<Object> entityObject) {
+    public BlankFragment(ArrayList<SongInfoModel> entityObject) {
 
         for(int i=0;i<entityObject.size();i++)
         {
-            dummyList.add((String) entityObject.get(i));
+            entityList.add(entityObject.get(i));
         }
     }
 
@@ -50,15 +50,15 @@ public class BlankFragment extends Fragment {
         return rootView;
     }
 
-    public void createEntityComponent(ArrayList<String> dummyList){
+    public void createEntityComponent(ArrayList<SongInfoModel> entityList){
 
-        EntityListAdapter entityListAdapter = new EntityListAdapter(getContext(),R.layout.entity_component,dummyList);
+        EntityListAdapter entityListAdapter = new EntityListAdapter(getContext(),R.layout.entity_component,entityList);
         listView.setAdapter(entityListAdapter);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        createEntityComponent(dummyList);
+        createEntityComponent(entityList);
     }
 }
