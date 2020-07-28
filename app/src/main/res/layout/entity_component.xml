@@ -2,7 +2,13 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/entity_theme">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
 
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -16,7 +22,6 @@
             android:id="@+id/thumbnail"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/thumb"
             android:contentDescription="Thumbnail"
             />
 
@@ -31,10 +36,14 @@
                 android:textAllCaps="false"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:textSize="20dp"
-                android:text="Music Name">
+                android:textSize="20dp">
 
             </TextView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#DDD"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,22 +53,24 @@
                 <Button
                     android:id="@+id/artistName"
                     android:textAllCaps="false"
+                    android:maxLines="1"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:textSize="10dp"
                     android:layout_weight="1"
-                    android:text="Artist Name">
+                    android:maxLength="20">
 
                 </Button>
 
                 <Button
                     android:id="@+id/albumName"
                     android:textAllCaps="false"
+                    android:maxLines="1"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:textSize="10dp"
                     android:layout_weight="1"
-                    android:text="Album Name">
+                    android:maxLength="20">
 
                 </Button>
 
