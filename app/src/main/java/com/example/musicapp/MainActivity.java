@@ -21,7 +21,6 @@ import org.json.*;
 
 public class MainActivity extends AppCompatActivity{
 
-    private Button button;
     OkHttpClient client = new OkHttpClient();
     List<SongInfoModel> music = new ArrayList<>();
     List<SongInfoModel> movie = new ArrayList<>();
@@ -45,13 +44,6 @@ public class MainActivity extends AppCompatActivity{
             convertStringToObjectArray(movie, movieResponse);
             convertStringToObjectArray(podcasts, podcastsResponse);
 
-//            for(SongInfoModel s : music){
-//                System.out.println("-------------");
-//                System.out.println("Artist Name : " + s.artistName);
-//                System.out.println("Track Name : " + s.trackName);
-//                System.out.println("Collection Name : " + s.collectionName);
-//                System.out.println("Thumbnail URL : " + s.thumbnailURL);
-//            }
         }
         catch (Exception e){
             e.printStackTrace();
