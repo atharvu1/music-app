@@ -48,8 +48,16 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
         final SongInfoModel songInfoModel = mEntityList.get(position);
 
         entityTextView.setText(songInfoModel.getTrackName());
-        artistButton.setText(songInfoModel.getArtistName());
-        albumButton.setText(songInfoModel.getCollectionName());
+        if(songInfoModel.getArtistName().length()<=20)
+            artistButton.setText(songInfoModel.getArtistName());
+        else
+            artistButton.setText(songInfoModel.getArtistName().substring(0,17)+"...");
+
+        if(songInfoModel.getCollectionName().length()<=20)
+            albumButton.setText(songInfoModel.getCollectionName());
+        else
+            albumButton.setText(songInfoModel.getCollectionName().substring(0,17)+"...");
+
         try {
             URL url = new URL(songInfoModel.getThumbnailURL());
             Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
