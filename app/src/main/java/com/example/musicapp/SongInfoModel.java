@@ -6,6 +6,7 @@ public class SongInfoModel {
     String collectionName;
     String thumbnailURL;
 
+
     SongInfoModel(String trackName, String artistName, String collectionName, String thumbnailURL){
         this.trackName = trackName;
         this.artistName = artistName;
