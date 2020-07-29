@@ -2,8 +2,7 @@ package com.example.musicapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.module.AppGlideModule;
+import com.squareup.picasso.Picasso; //IMAGE FETCHING AND CACHING
 
-import java.net.URL;
 import java.util.List;
 
 public class SongAdapter extends ArrayAdapter<SongInfoModel> {
@@ -22,17 +20,19 @@ public class SongAdapter extends ArrayAdapter<SongInfoModel> {
     Context mCtx;
     int resource;
     List<SongInfoModel> songList;
-
+    int i;
     public SongAdapter(Context mCtx, int resource, List<SongInfoModel> songList) {
         super(mCtx, resource, songList);
 
         this.mCtx = mCtx;
         this.resource = resource;
         this.songList = songList;
+        i = 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(resource, null);
 
@@ -46,14 +46,13 @@ public class SongAdapter extends ArrayAdapter<SongInfoModel> {
         textView.setText(songInfoModel.getTrackName());
         buttonArtist.setText(songInfoModel.getArtistName());
         buttonAlbum.setText(songInfoModel.getCollectionName());
-        try {
-            URL url = new URL(songInfoModel.getThumbnailURL());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            imageView.setImageBitmap(bmp);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        Picasso.get().load(songInfoModel.getThumbnailURL()).into(imageView);
+
+
         buttonArtist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +61,6 @@ public class SongAdapter extends ArrayAdapter<SongInfoModel> {
                 i.putExtra("type", "artist");
                 i.putExtra("value", artist);
                 mCtx.startActivity(i);
-
             }
         });
 

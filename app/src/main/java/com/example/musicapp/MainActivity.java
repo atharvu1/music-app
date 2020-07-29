@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 String artistName = arr.getJSONObject(i).getString("artistName");
                 String collectionName = arr.getJSONObject(i).getString("collectionName");
                 String thumbnailURL = arr.getJSONObject(i).getString("artworkUrl100");
+                /*String thumbnailURL = arr.getJSONObject(i).getString("artworkUrl30");*/
                 SongInfoModel model = new SongInfoModel(trackName, artistName, collectionName, thumbnailURL);
                 mod.add(model);
 
