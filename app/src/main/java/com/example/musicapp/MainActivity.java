@@ -5,6 +5,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
@@ -38,12 +39,29 @@ public class MainActivity extends AppCompatActivity {
             String movieURL = "https://itunes.apple.com/search?term=movie&limit=10";
             String musicURL = "https://itunes.apple.com/search?term=music&limit=10";
             String podcastsURL = "https://itunes.apple.com/search?term=podcast&limit=10";
+
+
+            long start = System.currentTimeMillis();
+
             String musicResponse = getApiResponse(musicURL);
             String movieResponse = getApiResponse(movieURL);
             String podcastsResponse = getApiResponse(podcastsURL);
+
+            long end = System.currentTimeMillis();
+            long elapsedTime = end - start;
+            Log.d("TAG", "Time elapsed: getApiResponse: "+elapsedTime);
+
+
+
+            start = System.currentTimeMillis();
+
             convertStringToObjectArray(music, musicResponse);
             convertStringToObjectArray(movie, movieResponse);
             convertStringToObjectArray(podcast, podcastsResponse);
+
+            end = System.currentTimeMillis();
+            elapsedTime = end - start;
+            Log.d("TAG", "Time elapsed: convertStringToOBjectArray: "+elapsedTime);
         }
         catch (Exception e){
             e.printStackTrace();

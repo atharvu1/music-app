@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -64,9 +67,17 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
             albumButton.setText(songInfoModel.getCollectionName().substring(0,17)+"...");
 
         try {
-            URL url = new URL(songInfoModel.getThumbnailURL());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            thumbnail.setImageBitmap(bmp);
+            long start = System.currentTimeMillis();
+
+//            URL url = new URL(songInfoModel.getThumbnailURL());
+//            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//            thumbnail.setImageBitmap(bmp);
+
+            Picasso.get().load(songInfoModel.getThumbnailURL()).into(thumbnail);
+
+            long end = System.currentTimeMillis();
+            long elapsedTime = end - stgart;
+            Log.d("TAG", "Time elapsed: BitmapFactory GetImage: "+elapsedTime);
         }
         catch (Exception e){
             e.printStackTrace();
