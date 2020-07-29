@@ -76,7 +76,7 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
             Picasso.get().load(songInfoModel.getThumbnailURL()).into(thumbnail);
 
             long end = System.currentTimeMillis();
-            long elapsedTime = end - stgart;
+            long elapsedTime = end - start;
             Log.d("TAG", "Time elapsed: BitmapFactory GetImage: "+elapsedTime);
         }
         catch (Exception e){
