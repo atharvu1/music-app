@@ -6,7 +6,6 @@ import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
-import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.okhttp.OkHttpClient;
@@ -18,14 +17,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-//    OkHttpClient client = new OkHttpClient();
     ArrayList<SongInfoModel> music = new ArrayList<>();
     ArrayList<SongInfoModel> movie = new ArrayList<>();
     ArrayList<SongInfoModel> podcast = new ArrayList<>();
