@@ -1,6 +1,8 @@
 package com.example.musicapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +17,7 @@ import java.util.List;
 public class DetailedActivity extends AppCompatActivity {
 
     ArrayList<SongInfoModel> model = new ArrayList<>();
-    ListView listView;
+    RecyclerView listView;
     TextView title;
     Button btn;
 
@@ -40,10 +42,11 @@ public class DetailedActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        listView = (ListView)findViewById(R.id.listViewSpecific);
+        listView = findViewById(R.id.listViewSpecific);
 
         EntityListAdapter adapter = new EntityListAdapter(this, R.layout.entity_component, model);
-
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(mLayoutManager);
         listView.setAdapter(adapter);
 
     }

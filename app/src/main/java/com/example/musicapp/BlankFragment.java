@@ -4,18 +4,12 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import android.os.SystemClock;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-
-import org.w3c.dom.Entity;
-
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 /**
@@ -25,7 +19,7 @@ public class BlankFragment extends Fragment {
 
     LayoutInflater mLayoutInflater;
     ViewGroup mContainer;
-    ListView listView;
+    RecyclerView recyclerView;
     ArrayList<SongInfoModel> entityList = new ArrayList<>();
 
     public BlankFragment(ArrayList<SongInfoModel> entityObject) {
@@ -45,7 +39,7 @@ public class BlankFragment extends Fragment {
 
         mLayoutInflater=inflater;
         mContainer=container;
-        listView = rootView.findViewById(R.id.listView);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
 
         return rootView;
     }
@@ -53,7 +47,9 @@ public class BlankFragment extends Fragment {
     public void createEntityComponent(ArrayList<SongInfoModel> entityList){
 
         EntityListAdapter entityListAdapter = new EntityListAdapter(getContext(),R.layout.entity_component,entityList);
-        listView.setAdapter(entityListAdapter);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setAdapter(entityListAdapter);
     }
 
     @Override
