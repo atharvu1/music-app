@@ -2,95 +2,40 @@ package com.example.musicapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.StrictMode;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
-
-import java.net.URL;
 import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
-class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
+class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
 
-    private Context mContext;
-    private int mResource;
     ArrayList<SongInfoModel> mEntityList;
+    Context mContext;
+    int mResource;
+    SongInfoModel songInfoModel;
 
-    public EntityListAdapter(@NonNull Context context, int resource, ArrayList<SongInfoModel> entityList) {
-        super(context, resource, entityList);
+    public EntityListAdapter(Context context, int resource, ArrayList<SongInfoModel> entityList){
+        mEntityList = entityList;
         mContext = context;
         mResource = resource;
-        mEntityList = entityList;
-
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//        String entityName = getItem(position);
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-//                .permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
-
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        convertView = layoutInflater.inflate(mResource,parent,false);
-
-        TextView entityTextView = convertView.findViewById(R.id.entityName);
-        Button artistButton = convertView.findViewById(R.id.artistName);
-        Button albumButton = convertView.findViewById(R.id.albumName);
-        ImageView thumbnail = convertView.findViewById(R.id.thumbnail);
-
-        final SongInfoModel songInfoModel = mEntityList.get(position);
-
-        entityTextView.setText(songInfoModel.getTrackName());
-        if(songInfoModel.getArtistName().length()<=20)
-            artistButton.setText(songInfoModel.getArtistName());
-        else
-            artistButton.setText(songInfoModel.getArtistName().substring(0,17)+"...");
-
-        if(songInfoModel.getCollectionName().length()<=20)
-            albumButton.setText(songInfoModel.getCollectionName());
-        else
-            albumButton.setText(songInfoModel.getCollectionName().substring(0,17)+"...");
-
-        try {
-            long start = System.currentTimeMillis();
-
-//            URL url = new URL(songInfoModel.getThumbnailURL());
-//            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-//            thumbnail.setImageBitmap(bmp);
-
-            Picasso.get().load(songInfoModel.getThumbnailURL()).into(thumbnail);
-
-            long end = System.currentTimeMillis();
-            long elapsedTime = end - start;
-            Log.d("TAG", "Time elapsed: BitmapFactory GetImage: "+elapsedTime);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-
+    public EntityHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(mResource,parent,false);
+        Button artistName = view.findViewById(R.id.artistName);
+        Button albumName = view.findViewById(R.id.albumName);
 
         if(mContext.getClass().getSimpleName().equals("DetailedActivity")){
-            artistButton.setEnabled(false);
-            albumButton.setEnabled(false);
+            artistName.setEnabled(false);
+            albumName.setEnabled(false);
         }
 
-        artistButton.setOnClickListener(new View.OnClickListener() {
+        artistName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(mContext.getApplicationContext(), DetailedActivity.class);
@@ -101,7 +46,7 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
             }
         });
 
-        albumButton.setOnClickListener(new View.OnClickListener() {
+        albumName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(mContext.getApplicationContext(), DetailedActivity.class);
@@ -112,6 +57,17 @@ class EntityListAdapter extends ArrayAdapter<SongInfoModel> {
             }
         });
 
-        return convertView;
+        return new EntityHolder(mContext,view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull EntityHolder holder, int position) {
+        this.songInfoModel = mEntityList.get(position);
+        holder.bindEntity(songInfoModel);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mEntityList.size();
     }
 }
