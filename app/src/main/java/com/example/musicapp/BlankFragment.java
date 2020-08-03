@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,13 +25,18 @@ public class BlankFragment extends Fragment {
     ViewGroup mContainer;
     RecyclerView recyclerView;
     ArrayList<SongInfoModel> entityList = new ArrayList<>();
+    String mType;
+    int offset=14;
+    int scrolledOutItems;
+    boolean isScrolling = false;
 
-    public BlankFragment(ArrayList<SongInfoModel> entityObject) {
+    public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
 
         for(int i=0;i<entityObject.size();i++)
         {
             entityList.add(entityObject.get(i));
         }
+        mType = type;
     }
 
 
@@ -44,14 +50,31 @@ public class BlankFragment extends Fragment {
         mContainer=container;
         recyclerView = rootView.findViewById(R.id.recyclerView);
 
-        /* Not working: For pagination, need to debug */
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if(dy>0){
-
-                    Toast.makeText(getContext(), "Scrolled!", Toast.LENGTH_SHORT).show();
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                    isScrolling = true;
                 }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                scrolledOutItems = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+                if(isScrolling && (scrolledOutItems % 7 == 0) || (scrolledOutItems % 12 == 0)){
+                    offset+=7;
+                    MainActivity obj = new MainActivity();
+                    try {
+                        String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=7&offset="+offset);
+                        obj.convertStringToObjectArray(entityList, entityResponse);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                isScrolling=false;
             }
         });
 

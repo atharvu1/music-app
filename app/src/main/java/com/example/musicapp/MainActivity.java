@@ -50,16 +50,15 @@ public class MainActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         searchText = findViewById(R.id.searchText);
 
-        final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=10"};
-        final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=10"};
-        final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=10"};
+        final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
+        final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
+        final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
 
         fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
 
 
         /* Below onClick working properly, but a slight bug on the movies tab.
          Can be solved later because it's working fine */
-
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,14 +72,16 @@ public class MainActivity extends AppCompatActivity {
                     String query = searchText.getText().toString();
                     query.replaceAll(" ", "+");
                     query.toLowerCase();
-                    musicURL[0] = "https://itunes.apple.com/search?term="+query+"&media=music&limit=10";
-                    movieURL[0] = "https://itunes.apple.com/search?term="+query+"&media=movie&limit=10";
-                    podcastsURL[0] = "https://itunes.apple.com/search?term="+query+"&media=podcast&limit=10";
+                    musicURL[0] = "https://itunes.apple.com/search?term="+query+"&media=music&limit=14";
+                    movieURL[0] = "https://itunes.apple.com/search?term="+query+"&media=movie&limit=14";
+                    podcastsURL[0] = "https://itunes.apple.com/search?term="+query+"&media=podcast&limit=14";
 
                     fetchDatafromAPI(musicURL[0],movieURL[0],podcastsURL[0]);
                 }
             }
         });
+
+
     }
 
     public void fetchDatafromAPI(String musicURL,String movieURL,String podcastsURL){
@@ -108,9 +109,9 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager){
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
-        musicFragment = new BlankFragment(music);
-        movieFragment = new BlankFragment(movie);
-        podcastFragment = new BlankFragment(podcast);
+        musicFragment = new BlankFragment(music,"music");
+        movieFragment = new BlankFragment(movie,"movie");
+        podcastFragment = new BlankFragment(podcast,"podcast");
 
         viewPagerAdapter.addFragment(musicFragment,"Music");
         viewPagerAdapter.addFragment(movieFragment,"Movies");
