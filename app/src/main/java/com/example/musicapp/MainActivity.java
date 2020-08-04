@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < 1; i++) {
                     BlankFragment fragment;
                     int currentFragmentId = viewPager.getCurrentItem();
                     switch (currentFragmentId) {
@@ -81,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     if (fragment != null) {
 
                         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.remove(musicFragment);
-                        fragmentTransaction.remove(movieFragment);
-                        fragmentTransaction.remove(podcastFragment);
+                        fragmentTransaction.remove(fragment);
                         fragmentTransaction.commit();
 
                         String query = searchText.getText().toString();
