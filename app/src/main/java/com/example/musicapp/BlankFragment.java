@@ -45,6 +45,12 @@ public class BlankFragment extends Fragment {
 
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -73,7 +79,7 @@ public class BlankFragment extends Fragment {
                     entityList.clear();
                     //System.out.println(entityList);
                     obj.convertStringToObjectArray(entityList, entityResponse);
-                    refreshFragemnt();
+                    refreshFragment();
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -126,7 +132,7 @@ public class BlankFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         createEntityComponent(entityList);
     }
-    public void refreshFragemnt(){
+    public void refreshFragment(){
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (Build.VERSION.SDK_INT >= 26) {
             ft.setReorderingAllowed(false);
