@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<SongInfoModel> movie = new ArrayList<>();
     public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
     SwipeRefreshLayout swipeRefreshLayout;
+    boolean isClicked=false;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
     @Override
@@ -57,29 +59,78 @@ public class MainActivity extends AppCompatActivity {
 
         fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
 
-
-        /*swipeRefreshLayout = findViewById(R.id.pullDownRefresh);
-        System.out.println("REF:      " + swipeRefreshLayout);*/
-        /* Below onClick working properly, but a slight bug on the movies tab.
-         Can be solved later because it's working fine */
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = musicFragment;
-                if(fragment!=null){
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.remove(musicFragment);
-                    fragmentTransaction.remove(movieFragment);
-                    fragmentTransaction.remove(podcastFragment);
-                    fragmentTransaction.commit();
-                    String query = searchText.getText().toString();
-                    query.replaceAll(" ", "+");
-                    query.toLowerCase();
-                    musicURL[0] = "https://itunes.apple.com/search?term="+query+"&media=music&limit=14";
-                    movieURL[0] = "https://itunes.apple.com/search?term="+query+"&media=movie&limit=14";
-                    podcastsURL[0] = "https://itunes.apple.com/search?term="+query+"&media=podcast&limit=14";
+                for (int i = 0; i < 2; i++) {
+                    BlankFragment fragment;
+                    int currentFragmentId = viewPager.getCurrentItem();
+                    switch (currentFragmentId) {
+                        case 0:
+                            fragment = musicFragment;
+                            break;
+                        case 1:
+                            fragment = movieFragment;
+                            break;
+                        case 2:
+                            fragment = podcastFragment;
+                            break;
+                        default:
+                            fragment = null;
+                    }
+                    if (fragment != null) {
 
-                    fetchDatafromAPI(musicURL[0],movieURL[0],podcastsURL[0]);
+                        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.remove(musicFragment);
+                        fragmentTransaction.remove(movieFragment);
+                        fragmentTransaction.remove(podcastFragment);
+                        fragmentTransaction.commit();
+
+                        String query = searchText.getText().toString();
+                        query.replaceAll(" ", "+");
+                        query.toLowerCase();
+
+                        String url;
+                        switch (currentFragmentId) {
+                            case 0:
+                                url = "https://itunes.apple.com/search?term=" + query + "&media=music&limit=14";
+                                break;
+                            case 1:
+                                url = "https://itunes.apple.com/search?term=" + query + "&media=movie&limit=14";
+                                break;
+                            case 2:
+                                url = "https://itunes.apple.com/search?term=" + query + "&media=podcast&limit=14";
+                                break;
+                            default:
+                                url = "null";
+                        }
+
+                        try {
+                            String response = getApiResponse(url);
+
+                            switch (currentFragmentId) {
+                                case 0:
+                                    music.clear();
+                                    convertStringToObjectArray(music, response);
+                                    break;
+                                case 1:
+                                    movie.clear();
+                                    convertStringToObjectArray(movie, response);
+                                    break;
+                                case 2:
+                                    podcast.clear();
+                                    convertStringToObjectArray(podcast, response);
+                                    break;
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        setupViewPager(viewPager);
+                        tabLayout.setupWithViewPager(viewPager);
+                        Objects.requireNonNull(tabLayout.getTabAt(currentFragmentId)).select();
+                    }
                 }
             }
         });
