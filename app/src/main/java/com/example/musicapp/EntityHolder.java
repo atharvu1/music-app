@@ -16,14 +16,11 @@ public class EntityHolder extends RecyclerView.ViewHolder implements View.OnClic
 
     public EntityHolder(Context context, View itemView) {
         super(itemView);
-
         this.thumbnail = itemView.findViewById(R.id.thumbnail);
         this.entityName = itemView.findViewById(R.id.entityName);
         this.artistName = itemView.findViewById(R.id.artistName);
         this.albumName = itemView.findViewById(R.id.albumName);
         itemView.setOnClickListener(this);
-
-
     }
 
     public void bindEntity(SongInfoModel songInfoModel){
@@ -45,4 +42,5 @@ public class EntityHolder extends RecyclerView.ViewHolder implements View.OnClic
     public void onClick(View view) {
 
     }
+
 }

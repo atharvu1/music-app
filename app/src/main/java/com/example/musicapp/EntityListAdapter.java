@@ -6,9 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
 
@@ -16,7 +19,7 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
     Context mContext;
     int mResource;
     SongInfoModel songInfoModel;
-
+    SwipeRefreshLayout swipeRefreshLayout;
     public EntityListAdapter(Context context, int resource, ArrayList<SongInfoModel> entityList){
         mEntityList = entityList;
         mContext = context;
@@ -29,6 +32,8 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
         View view = LayoutInflater.from(parent.getContext()).inflate(mResource,parent,false);
         Button artistName = view.findViewById(R.id.artistName);
         Button albumName = view.findViewById(R.id.albumName);
+
+
 
         if(mContext.getClass().getSimpleName().equals("DetailedActivity")){
             artistName.setEnabled(false);
@@ -57,6 +62,14 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
             }
         });
 
+        /*swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(mContext, "Hello", Toast.LENGTH_SHORT);
+                System.out.println("Refreshing");
+            }
+        });*/
+
         return new EntityHolder(mContext,view);
     }
 
@@ -66,8 +79,10 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
         holder.bindEntity(songInfoModel);
     }
 
+
     @Override
     public int getItemCount() {
         return mEntityList.size();
     }
+
 }

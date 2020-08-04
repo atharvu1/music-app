@@ -1,6 +1,7 @@
 package com.example.musicapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
@@ -29,17 +30,39 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<SongInfoModel> music = new ArrayList<>();
     ArrayList<SongInfoModel> movie = new ArrayList<>();
     ArrayList<SongInfoModel> podcast = new ArrayList<>();
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fetchData("10");
+        tabLayout = findViewById(R.id.tablayout);
+        viewPager = findViewById(R.id.viewPager);
 
+        setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
+
+        swipeRefreshLayout = findViewById(R.id.pullDownRefresh);
+        System.out.println("SWIPE REFRESH LAYOUT REF. : " + swipeRefreshLayout);
+        /*swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchData("20");
+                viewPager.getAdapter().notifyDataSetChanged();
+
+                swipeRefreshLayout.setRefreshing(false);
+
+            }
+        });*/
+
+    }
+
+    public void fetchData(String limit){
         try {
-            String movieURL = "https://itunes.apple.com/search?term=movie&limit=10";
-            String musicURL = "https://itunes.apple.com/search?term=music&limit=10";
-            String podcastsURL = "https://itunes.apple.com/search?term=podcast&limit=10";
-
+            String movieURL = "https://itunes.apple.com/search?term=movie&limit=" + limit;
+            String musicURL = "https://itunes.apple.com/search?term=music&limit=" + limit;
+            String podcastsURL = "https://itunes.apple.com/search?term=podcast&limit=" + limit;
 
             long start = System.currentTimeMillis();
 
@@ -50,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
             long end = System.currentTimeMillis();
             long elapsedTime = end - start;
             Log.d("TAG", "Time elapsed: getApiResponse: "+elapsedTime);
-
-
 
             start = System.currentTimeMillis();
 
@@ -66,14 +87,7 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e){
             e.printStackTrace();
         }
-
-        tabLayout = findViewById(R.id.tablayout);
-        viewPager = findViewById(R.id.viewPager);
-
-        setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
     }
-
     private void setupViewPager(ViewPager viewPager){
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
