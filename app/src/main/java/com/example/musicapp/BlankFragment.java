@@ -43,6 +43,11 @@ public class BlankFragment extends Fragment {
         mType = type;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,7 +64,7 @@ public class BlankFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
+
                 System.out.println(mType);
                 //System.out.println(entityList);
                 MainActivity obj = new MainActivity();
@@ -74,6 +79,7 @@ public class BlankFragment extends Fragment {
                     //System.out.println(entityList);
                     obj.convertStringToObjectArray(entityList, entityResponse);
                     refreshFragemnt();
+                    Toast.makeText(getContext(), "Refresh " + offsetOnRefresh, Toast.LENGTH_SHORT).show();
 
                 }catch (Exception e){
                     e.printStackTrace();
