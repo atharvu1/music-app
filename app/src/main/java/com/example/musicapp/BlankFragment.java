@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -34,6 +37,9 @@ public class BlankFragment extends Fragment {
     int scrolledOutItems;
     boolean isScrolling = false;
     SwipeRefreshLayout swipeRefreshLayout;
+    private ImageButton searchButton;
+    private EditText searchText;
+
     public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
 
         for(int i=0;i<entityObject.size();i++)
@@ -42,6 +48,7 @@ public class BlankFragment extends Fragment {
         }
         mType = type;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,11 +67,12 @@ public class BlankFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recyclerView);
         swipeRefreshLayout = rootView.findViewById(R.id.pullDownRefresh);
         System.out.println("REF:      " + swipeRefreshLayout);
+        System.out.println("Fragment " + mType + " Ref. (BlankFragment)" + this);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
+                Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
                 System.out.println(mType);
                 //System.out.println(entityList);
                 MainActivity obj = new MainActivity();
@@ -133,10 +141,29 @@ public class BlankFragment extends Fragment {
         createEntityComponent(entityList);
     }
     public void refreshFragemnt(){
+        System.out.println("Before refresh");
+        System.out.println("Fragment " + mType + " Ref. (BlankFragment)" + this);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (Build.VERSION.SDK_INT >= 26) {
             ft.setReorderingAllowed(false);
         }
         ft.detach(this).attach(this).commit();
+        System.out.println("After refresh");
+        System.out.println("Fragment " + mType + " Ref. (BlankFragment)" + this);
+    }
+
+    public void searchQuery(String query){
+        MainActivity obj = new MainActivity();
+        try {
+            String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=14");
+            entityList.clear();
+            //System.out.println(entityList);
+            obj.convertStringToObjectArray(entityList, entityResponse);
+            refreshFragemnt();
+            //Toast.makeText(getContext(), "Refresh " + offsetOnRefresh, Toast.LENGTH_SHORT).show();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

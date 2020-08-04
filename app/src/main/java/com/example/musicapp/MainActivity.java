@@ -5,10 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,8 +41,11 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<SongInfoModel> music = new ArrayList<>();
     public static ArrayList<SongInfoModel> movie = new ArrayList<>();
     public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
+    ViewPagerAdapter viewPagerAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
+    boolean isClicked=false;
     BlankFragment musicFragment, movieFragment, podcastFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,36 +63,44 @@ public class MainActivity extends AppCompatActivity {
 
         fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
 
-
-        /*swipeRefreshLayout = findViewById(R.id.pullDownRefresh);
-        System.out.println("REF:      " + swipeRefreshLayout);*/
-        /* Below onClick working properly, but a slight bug on the movies tab.
-         Can be solved later because it's working fine */
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = musicFragment;
-                if(fragment!=null){
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.remove(musicFragment);
-                    fragmentTransaction.remove(movieFragment);
-                    fragmentTransaction.remove(podcastFragment);
-                    fragmentTransaction.commit();
-                    String query = searchText.getText().toString();
-                    query.replaceAll(" ", "+");
-                    query.toLowerCase();
-                    musicURL[0] = "https://itunes.apple.com/search?term="+query+"&media=music&limit=14";
-                    movieURL[0] = "https://itunes.apple.com/search?term="+query+"&media=movie&limit=14";
-                    podcastsURL[0] = "https://itunes.apple.com/search?term="+query+"&media=podcast&limit=14";
-
-                    fetchDatafromAPI(musicURL[0],movieURL[0],podcastsURL[0]);
+                int currentFragmentId = viewPager.getCurrentItem();
+                System.out.println("Current Fragment item : " + currentFragmentId);
+                String query = searchText.getText().toString();
+                System.out.println("Search text : " + query);
+                query.replaceAll(" ", "+");
+                query.toLowerCase();
+                switch (currentFragmentId) {
+                    case 0:
+                        musicFragment.searchQuery(query);
+                        break;
+                    case 1:
+                        movieFragment.searchQuery(query);
+                        break;
+                    case 2:
+                        podcastFragment.searchQuery(query);
+                        break;
+                    default:
+                        System.out.println("No fragment found");
                 }
+
             }
         });
 
 
     }
+    public void updateFragment(BlankFragment fragment){
 
+        System.out.println("Current Fragment inside updateFragment function " + fragment);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        //FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (Build.VERSION.SDK_INT >= 26) {
+            ft.setReorderingAllowed(false);
+        }
+        ft.detach(fragment).attach(fragment).commit();
+    }
     public void fetchDatafromAPI(String musicURL,String movieURL,String podcastsURL){
         try {
             String musicResponse = getApiResponse(musicURL);
@@ -109,12 +123,19 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+
+
     private void setupViewPager(ViewPager viewPager){
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
+        //ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
         musicFragment = new BlankFragment(music,"music");
         movieFragment = new BlankFragment(movie,"movie");
         podcastFragment = new BlankFragment(podcast,"podcast");
+
+        System.out.println("Music Ref : " + musicFragment);
+        System.out.println("Movie Ref : " + movieFragment);
+        System.out.println("Podcast Ref : " + podcastFragment);
 
         viewPagerAdapter.addFragment(musicFragment,"Music");
         viewPagerAdapter.addFragment(movieFragment,"Movies");
@@ -123,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(viewPagerAdapter);
 
     }
+
 
     public static String getApiResponse(String URL) throws IOException {
         OkHttpClient client = new OkHttpClient();
