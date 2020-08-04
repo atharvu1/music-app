@@ -1,12 +1,21 @@
 package com.example.musicapp;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
-import android.widget.Button;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.okhttp.OkHttpClient;
@@ -18,57 +27,83 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private ImageButton searchButton;
+    private EditText searchText;
 
-//    OkHttpClient client = new OkHttpClient();
-    ArrayList<SongInfoModel> music = new ArrayList<>();
-    ArrayList<SongInfoModel> movie = new ArrayList<>();
-    ArrayList<SongInfoModel> podcast = new ArrayList<>();
+    public static ArrayList<SongInfoModel> music = new ArrayList<>();
+    public static ArrayList<SongInfoModel> movie = new ArrayList<>();
+    public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
+    SwipeRefreshLayout swipeRefreshLayout;
+    BlankFragment musicFragment, movieFragment, podcastFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tabLayout = findViewById(R.id.tablayout);
+        viewPager = findViewById(R.id.viewPager);
+        searchButton = findViewById(R.id.searchButton);
+        searchText = findViewById(R.id.searchText);
+
+        final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
+        final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
+        final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
+
+        fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
+
+
+        /*swipeRefreshLayout = findViewById(R.id.pullDownRefresh);
+        System.out.println("REF:      " + swipeRefreshLayout);*/
+        /* Below onClick working properly, but a slight bug on the movies tab.
+         Can be solved later because it's working fine */
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = musicFragment;
+                if(fragment!=null){
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.remove(musicFragment);
+                    fragmentTransaction.remove(movieFragment);
+                    fragmentTransaction.remove(podcastFragment);
+                    fragmentTransaction.commit();
+                    String query = searchText.getText().toString();
+                    query.replaceAll(" ", "+");
+                    query.toLowerCase();
+                    musicURL[0] = "https://itunes.apple.com/search?term="+query+"&media=music&limit=14";
+                    movieURL[0] = "https://itunes.apple.com/search?term="+query+"&media=movie&limit=14";
+                    podcastsURL[0] = "https://itunes.apple.com/search?term="+query+"&media=podcast&limit=14";
+
+                    fetchDatafromAPI(musicURL[0],movieURL[0],podcastsURL[0]);
+                }
+            }
+        });
+
+
+    }
+
+    public void fetchDatafromAPI(String musicURL,String movieURL,String podcastsURL){
         try {
-            String movieURL = "https://itunes.apple.com/search?term=movie&limit=10";
-            String musicURL = "https://itunes.apple.com/search?term=music&limit=10";
-            String podcastsURL = "https://itunes.apple.com/search?term=podcast&limit=10";
-
-
-            long start = System.currentTimeMillis();
-
             String musicResponse = getApiResponse(musicURL);
             String movieResponse = getApiResponse(movieURL);
             String podcastsResponse = getApiResponse(podcastsURL);
 
-            long end = System.currentTimeMillis();
-            long elapsedTime = end - start;
-            Log.d("TAG", "Time elapsed: getApiResponse: "+elapsedTime);
-
-
-
-            start = System.currentTimeMillis();
+            music.clear();
+            movie.clear();
+            podcast.clear();
 
             convertStringToObjectArray(music, musicResponse);
             convertStringToObjectArray(movie, movieResponse);
             convertStringToObjectArray(podcast, podcastsResponse);
-
-            end = System.currentTimeMillis();
-            elapsedTime = end - start;
-            Log.d("TAG", "Time elapsed: convertStringToOBjectArray: "+elapsedTime);
         }
         catch (Exception e){
             e.printStackTrace();
         }
-
-        tabLayout = findViewById(R.id.tablayout);
-        viewPager = findViewById(R.id.viewPager);
 
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
@@ -77,11 +112,16 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager){
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
-        viewPagerAdapter.addFragment(new BlankFragment(music),"Music");
-        viewPagerAdapter.addFragment(new BlankFragment(movie),"Movies");
-        viewPagerAdapter.addFragment(new BlankFragment(podcast),"Podcasts");
+        musicFragment = new BlankFragment(music,"music");
+        movieFragment = new BlankFragment(movie,"movie");
+        podcastFragment = new BlankFragment(podcast,"podcast");
+
+        viewPagerAdapter.addFragment(musicFragment,"Music");
+        viewPagerAdapter.addFragment(movieFragment,"Movies");
+        viewPagerAdapter.addFragment(podcastFragment,"Podcasts");
 
         viewPager.setAdapter(viewPagerAdapter);
+
     }
 
     public static String getApiResponse(String URL) throws IOException {
@@ -104,7 +144,12 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < arr.length(); i++){
                 String trackName = arr.getJSONObject(i).getString("trackName");
                 String artistName = arr.getJSONObject(i).getString("artistName");
-                String collectionName = arr.getJSONObject(i).getString("collectionName");
+                String collectionName;
+                if(arr.getJSONObject(i).has("collectionName"))
+                    collectionName = arr.getJSONObject(i).getString("collectionName");
+                else{
+                    collectionName = "Unknown";
+                }
                 String thumbnailURL = arr.getJSONObject(i).getString("artworkUrl100");
                 SongInfoModel model = new SongInfoModel(trackName, artistName, collectionName, thumbnailURL);
                 mod.add(model);
