@@ -15,8 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -28,6 +31,8 @@ public class BlankFragment extends Fragment {
     LayoutInflater mLayoutInflater;
     ViewGroup mContainer;
     RecyclerView recyclerView;
+    private ImageButton searchButton;
+    private EditText searchText;
     ArrayList<SongInfoModel> entityList = new ArrayList<>();
     String mType;
     int offset=14;
@@ -60,7 +65,29 @@ public class BlankFragment extends Fragment {
         mContainer=container;
         recyclerView = rootView.findViewById(R.id.recyclerView);
         swipeRefreshLayout = rootView.findViewById(R.id.pullDownRefresh);
+        searchButton = rootView.findViewById(R.id.searchButton);
+        searchText = rootView.findViewById(R.id.searchText);
         System.out.println("REF:      " + swipeRefreshLayout);
+
+         searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                        String query = searchText.getText().toString();
+                        query.replaceAll(" ", "+");
+                        query.toLowerCase();
+                        String url = "https://itunes.apple.com/search?term=" + query + "&media="+ mType +"&limit=14";
+                        MainActivity obj = new MainActivity();
+                String entityResponse = null;
+                try {
+                    entityResponse = obj.getApiResponse(url);
+                    entityList.clear();
+                    obj.convertStringToObjectArray(entityList, entityResponse);
+                    refreshFragment();
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

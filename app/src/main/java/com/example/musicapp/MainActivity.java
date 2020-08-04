@@ -33,14 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private ImageButton searchButton;
-    private EditText searchText;
 
     public static ArrayList<SongInfoModel> music = new ArrayList<>();
     public static ArrayList<SongInfoModel> movie = new ArrayList<>();
     public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
-    SwipeRefreshLayout swipeRefreshLayout;
-    boolean isClicked=false;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
     @Override
@@ -50,88 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tablayout);
         viewPager = findViewById(R.id.viewPager);
-        searchButton = findViewById(R.id.searchButton);
-        searchText = findViewById(R.id.searchText);
 
         final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
         final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
         final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
 
         fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                for (int i = 0; i < 1; i++) {
-                    BlankFragment fragment;
-                    int currentFragmentId = viewPager.getCurrentItem();
-                    switch (currentFragmentId) {
-                        case 0:
-                            fragment = musicFragment;
-                            break;
-                        case 1:
-                            fragment = movieFragment;
-                            break;
-                        case 2:
-                            fragment = podcastFragment;
-                            break;
-                        default:
-                            fragment = null;
-                    }
-                    if (fragment != null) {
-
-                        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.remove(fragment);
-                        fragmentTransaction.commit();
-
-                        String query = searchText.getText().toString();
-                        query.replaceAll(" ", "+");
-                        query.toLowerCase();
-
-                        String url;
-                        switch (currentFragmentId) {
-                            case 0:
-                                url = "https://itunes.apple.com/search?term=" + query + "&media=music&limit=14";
-                                break;
-                            case 1:
-                                url = "https://itunes.apple.com/search?term=" + query + "&media=movie&limit=14";
-                                break;
-                            case 2:
-                                url = "https://itunes.apple.com/search?term=" + query + "&media=podcast&limit=14";
-                                break;
-                            default:
-                                url = "null";
-                        }
-
-                        try {
-                            String response = getApiResponse(url);
-
-                            switch (currentFragmentId) {
-                                case 0:
-                                    music.clear();
-                                    convertStringToObjectArray(music, response);
-                                    break;
-                                case 1:
-                                    movie.clear();
-                                    convertStringToObjectArray(movie, response);
-                                    break;
-                                case 2:
-                                    podcast.clear();
-                                    convertStringToObjectArray(podcast, response);
-                                    break;
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        setupViewPager(viewPager);
-                        tabLayout.setupWithViewPager(viewPager);
-                        Objects.requireNonNull(tabLayout.getTabAt(currentFragmentId)).select();
-                    }
-                }
-            }
-        });
 
 
     }
