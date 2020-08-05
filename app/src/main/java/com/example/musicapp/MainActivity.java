@@ -1,23 +1,23 @@
 package com.example.musicapp;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+/*import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;*/
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+/*import androidx.fragment.app.Fragment;*/
 import androidx.fragment.app.FragmentTransaction;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.PagerAdapter;
+/*import androidx.viewpager.widget.PagerAdapter;*/
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.okhttp.OkHttpClient;
@@ -29,7 +29,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
+//import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<SongInfoModel> movie = new ArrayList<>();
     public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
     ViewPagerAdapter viewPagerAdapter;
-    SwipeRefreshLayout swipeRefreshLayout;
-    boolean isClicked=false;
+    /*SwipeRefreshLayout swipeRefreshLayout;
+    boolean isClicked=false;*/
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    public void updateFragment(BlankFragment fragment){
+    /*public void updateFragment(BlankFragment fragment){
 
         System.out.println("Current Fragment inside updateFragment function " + fragment);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             ft.setReorderingAllowed(false);
         }
         ft.detach(fragment).attach(fragment).commit();
-    }
+    }*/
     public void fetchDatafromAPI(String musicURL,String movieURL,String podcastsURL){
         try {
             String musicResponse = getApiResponse(musicURL);
@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setupViewPager(ViewPager viewPager){
-        //ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
         musicFragment = new BlankFragment(music,"music");

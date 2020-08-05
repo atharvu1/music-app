@@ -21,7 +21,7 @@ public class DetailedActivity extends AppCompatActivity {
     ArrayList<SongInfoModel> model = new ArrayList<>();
     RecyclerView listView;
     TextView title;
-    Button btn;
+    //Button btn;
 
     int offset=14;
     int scrolledOutItems;
