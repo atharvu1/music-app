@@ -15,10 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-//import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -37,8 +33,6 @@ public class BlankFragment extends Fragment {
     int scrolledOutItems;
     boolean isScrolling = false;
     SwipeRefreshLayout swipeRefreshLayout;
-    /*private ImageButton searchButton;
-    private EditText searchText;*/
 
     public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
 

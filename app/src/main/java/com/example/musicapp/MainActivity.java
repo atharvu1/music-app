@@ -1,23 +1,13 @@
 package com.example.musicapp;
 
-/*import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;*/
 import androidx.appcompat.app.AppCompatActivity;
-/*import androidx.fragment.app.Fragment;*/
-import androidx.fragment.app.FragmentTransaction;
-
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-/*import androidx.viewpager.widget.PagerAdapter;*/
 import androidx.viewpager.widget.ViewPager;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-//import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-//import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.okhttp.OkHttpClient;
@@ -29,7 +19,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-//import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<SongInfoModel> movie = new ArrayList<>();
     public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
     ViewPagerAdapter viewPagerAdapter;
-    /*SwipeRefreshLayout swipeRefreshLayout;
-    boolean isClicked=false;*/
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
 
@@ -91,16 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    /*public void updateFragment(BlankFragment fragment){
 
-        System.out.println("Current Fragment inside updateFragment function " + fragment);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if (Build.VERSION.SDK_INT >= 26) {
-            ft.setReorderingAllowed(false);
-        }
-        ft.detach(fragment).attach(fragment).commit();
-    }*/
+
     public void fetchDatafromAPI(String musicURL,String movieURL,String podcastsURL){
         try {
             String musicResponse = getApiResponse(musicURL);
@@ -122,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
     }
-
 
 
     private void setupViewPager(ViewPager viewPager){
@@ -158,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
+
+
     public static void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
         try{
             JSONObject obj = new JSONObject(s);
