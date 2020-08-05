@@ -1,7 +1,6 @@
 package com.example.musicapp;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

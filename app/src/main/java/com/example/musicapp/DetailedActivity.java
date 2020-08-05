@@ -6,26 +6,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
+import android.os.Bundle;;
 import android.widget.AbsListView;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DetailedActivity extends AppCompatActivity {
 
     ArrayList<SongInfoModel> model = new ArrayList<>();
     RecyclerView listView;
     TextView title;
-    Button btn;
 
     int offset=14;
     int scrolledOutItems;
     boolean isScrolling = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +39,6 @@ public class DetailedActivity extends AppCompatActivity {
         try {
             String res = MainActivity.getApiResponse(URL);
             MainActivity.convertStringToObjectArray(model, res);
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -64,6 +59,7 @@ public class DetailedActivity extends AppCompatActivity {
                     isScrolling = true;
                 }
             }
+
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
