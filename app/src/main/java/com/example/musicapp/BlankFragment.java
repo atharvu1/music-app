@@ -1,5 +1,6 @@
 package com.example.musicapp;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -11,11 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
@@ -33,6 +37,11 @@ public class BlankFragment extends Fragment {
     int scrolledOutItems;
     boolean isScrolling = false;
     SwipeRefreshLayout swipeRefreshLayout;
+    String tagValue;
+    fragment fr;
+    public BlankFragment(){
+
+    }
 
     public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
 
@@ -47,7 +56,29 @@ public class BlankFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        Log.d("TAG", "Tag: "+this.getTag());
+        //setRetainInstance(true);
+
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof fragment){
+            fr = (fragment) context;
+        }else{
+            throw new RuntimeException(context.toString()+" must implement FragmentData");
+        }
+
+        this.tagValue = this.getTag();
+
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString(mType, this.getTag());
+        System.out.println("Putting state of " + mType);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -111,8 +142,11 @@ public class BlankFragment extends Fragment {
             }
         });
 
+        fr.sendFragmentState(mType, tagValue);
+        System.out.println("Fragment created");
         return rootView;
     }
+
 
     public void createEntityComponent(ArrayList<SongInfoModel> entityList){
 
@@ -126,8 +160,15 @@ public class BlankFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         createEntityComponent(entityList);
+        System.out.println("Activity created, list populated");
     }
     public void refreshFragemnt(){
+        /*BlankFragment fr1 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:0");
+        BlankFragment fr2 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:1");
+        BlankFragment fr3 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:2");
+        System.out.println(fr1 + " " + fr1.mType);
+        System.out.println(fr2 + " " + fr2.mType);
+        System.out.println(fr3 + " " + fr3.mType);*/
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (Build.VERSION.SDK_INT >= 26) {
             ft.setReorderingAllowed(false);
@@ -136,6 +177,7 @@ public class BlankFragment extends Fragment {
     }
 
     public void searchQuery(String query){
+
         MainActivity obj = new MainActivity();
         try {
             String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=14");
@@ -145,5 +187,9 @@ public class BlankFragment extends Fragment {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public interface fragment{
+        public void sendFragmentState(String key, String value);
     }
 }
