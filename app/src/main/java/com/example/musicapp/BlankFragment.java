@@ -55,14 +55,14 @@ public class BlankFragment extends Fragment {
     public BlankFragment(String type){
         this.mType = type;
     }
-    public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
-
-        for(int i=0;i<entityObject.size();i++)
-        {
-            entityList.add(entityObject.get(i));
-        }
-        mType = type;
-    }
+//    public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
+//
+//        for(int i=0;i<entityObject.size();i++)
+//        {
+//            entityList.add(entityObject.get(i));
+//        }
+//        mType = type;
+//    }
 
 
     @Override
