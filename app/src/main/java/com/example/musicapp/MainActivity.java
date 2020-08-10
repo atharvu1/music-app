@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BlankFragment.fragment{
 
@@ -35,9 +34,9 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
     private EditText searchText;
     HashMap<String, String> map;
 
-    public static ArrayList<SongInfoModel> music = new ArrayList<>();
+    /*public static ArrayList<SongInfoModel> music = new ArrayList<>();
     public static ArrayList<SongInfoModel> movie = new ArrayList<>();
-    public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
+    public static ArrayList<SongInfoModel> podcast = new ArrayList<>();*/
     ViewPagerAdapter viewPagerAdapter;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
@@ -77,7 +76,12 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
             final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
             final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
 
-            fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
+            //fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
+
+            tabLayout.setupWithViewPager(viewPager);
+            setupViewPager(viewPager);
+
+
 
             searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -149,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    public void fetchDatafromAPI(String musicURL, String movieURL, String podcastsURL){
+    /*public void fetchDatafromAPI(String musicURL, String movieURL, String podcastsURL){
         try {
             String musicResponse = getApiResponse(musicURL);
             String movieResponse = getApiResponse(movieURL);
@@ -167,30 +171,24 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
             e.printStackTrace();
         }
 
-        setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
+        *//*setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);*//*
         System.out.println("All done");
-    }
+    }*/
 
 
     private void setupViewPager(ViewPager viewPager){
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
-        /*musicFragment = new BlankFragment(music,"music");
-        movieFragment = new BlankFragment(movie,"movie");
-        podcastFragment = new BlankFragment(podcast,"podcast");*/
-        if(musicFragment == null)
-            musicFragment = new BlankFragment(music,"music");
-        if(movieFragment == null)
-            movieFragment = new BlankFragment(movie,"movie");
-        if(podcastFragment == null)
-            podcastFragment = new BlankFragment(podcast,"podcast");
+        musicFragment = new BlankFragment("music");
+        movieFragment = new BlankFragment("movie");
+        podcastFragment = new BlankFragment("podcast");
 
         System.out.println("Music Ref : " + musicFragment);
         System.out.println("Movie Ref : " + movieFragment);
         System.out.println("Podcast Ref : " + podcastFragment);
 
-        System.out.println(musicFragment.mType);
+        //System.out.println(musicFragment.mType);
 
         viewPagerAdapter.addFragment(musicFragment,"Music");
         viewPagerAdapter.addFragment(movieFragment,"Movies");

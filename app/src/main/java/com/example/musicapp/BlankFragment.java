@@ -13,12 +13,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Parcelable;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -43,6 +52,9 @@ public class BlankFragment extends Fragment {
 
     }
 
+    public BlankFragment(String type){
+        this.mType = type;
+    }
     public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
 
         for(int i=0;i<entityObject.size();i++)
@@ -71,6 +83,21 @@ public class BlankFragment extends Fragment {
         }
 
         this.tagValue = this.getTag();
+
+    }
+
+    //Using onResume function for data fetching
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            String res = getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=14"); // change limit to 30
+            convertStringToObjectArray(entityList, res);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
 
     }
 
@@ -136,10 +163,9 @@ public class BlankFragment extends Fragment {
 
                 if(isScrolling && (scrolledOutItems % 7 == 0) || (scrolledOutItems % 12 == 0)){
                     offset+=7;
-                    MainActivity obj = new MainActivity();
                     try {
-                        String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=7&offset="+offset);
-                        obj.convertStringToObjectArray(entityList, entityResponse);
+                        String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=7&offset="+offset);
+                        convertStringToObjectArray(entityList, entityResponse);
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -184,11 +210,10 @@ public class BlankFragment extends Fragment {
 
     public void searchQuery(String query){
 
-        MainActivity obj = new MainActivity();
         try {
-            String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=14");
+            String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=14");
             entityList.clear();
-            obj.convertStringToObjectArray(entityList, entityResponse);
+            convertStringToObjectArray(entityList, entityResponse);
             refreshFragemnt();
         }catch (Exception e){
             e.printStackTrace();
@@ -198,9 +223,42 @@ public class BlankFragment extends Fragment {
     public interface fragment{
         public void sendFragmentState(String key, String value);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public static String getApiResponse(String URL) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8){
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            Request request = new Request.Builder().url(URL).build();
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        }
+        return null;
     }
+
+
+    public static void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
+        try{
+            JSONObject obj = new JSONObject(s);
+            JSONArray arr = obj.getJSONArray("results"); // working
+            for(int i = 0; i < arr.length(); i++){
+                String trackName = arr.getJSONObject(i).getString("trackName");
+                String artistName = arr.getJSONObject(i).getString("artistName");
+                String collectionName;
+                if(arr.getJSONObject(i).has("collectionName"))
+                    collectionName = arr.getJSONObject(i).getString("collectionName");
+                else{
+                    collectionName = "Unknown";
+                }
+                String thumbnailURL = arr.getJSONObject(i).getString("artworkUrl100");
+                SongInfoModel model = new SongInfoModel(trackName, artistName, collectionName, thumbnailURL);
+                mod.add(model);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }
