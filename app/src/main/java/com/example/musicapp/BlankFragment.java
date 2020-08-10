@@ -81,11 +81,17 @@ public class BlankFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d("onCreateView", this + " " + this.mType);
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
+        if(savedInstanceState != null)
+            for(String key : savedInstanceState.keySet()){
+                Log.d ("myFragment ", key + " is a key in the bundle");
+            }
 
         mLayoutInflater=inflater;
         mContainer=container;
@@ -143,7 +149,7 @@ public class BlankFragment extends Fragment {
         });
 
         fr.sendFragmentState(mType, tagValue);
-        System.out.println("Fragment created");
+        System.out.println("Fragment created " + this.mType + " " + this);
         return rootView;
     }
 
@@ -160,7 +166,7 @@ public class BlankFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         createEntityComponent(entityList);
-        System.out.println("Activity created, list populated");
+        System.out.println("Activity created, list populated " + this.mType + " " + this);
     }
     public void refreshFragemnt(){
         /*BlankFragment fr1 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:0");
@@ -191,5 +197,10 @@ public class BlankFragment extends Fragment {
 
     public interface fragment{
         public void sendFragmentState(String key, String value);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

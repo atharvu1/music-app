@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
@@ -46,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         //System.out.println(savedInstanceState.getString("music"));
 
         super.onCreate(savedInstanceState);
-        map = new HashMap<>();
 
+        map = new HashMap<>();
         setContentView(R.layout.activity_main);
         /*if(savedInstanceState != null){
             System.out.println("Recreating");
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         }
 
         else{
+
             System.out.println("Creating for the first time");
             tabLayout = findViewById(R.id.tablayout);
             viewPager = findViewById(R.id.viewPager);
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         /*outState.putString("musicFragment", musicFragment.toString());
         outState.putString("movieFragment", movieFragment.toString());
         outState.putString("podcastFragment", podcastFragment.toString());*/
-
+        //outState.putParcelable("musicFrag", (Parcelable) musicFragment);
         System.out.println("Saving instances in MainActivity");
     }
 
@@ -127,12 +129,14 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         for(String key : savedInstanceState.keySet()){
             Log.d ("myApplication ", key + " is a key in the bundle");
         }
+        map = (HashMap<String, String>) savedInstanceState.getSerializable("stateMap");
         //fragMap = (HashMap<String, BlankFragment>) savedInstanceState.getSerializable("stateMap");
         System.out.println(map.get("music"));
         System.out.println(map.get("movie"));
         System.out.println(map.get("podcast"));
 
         musicFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("music"));
+        //musicFragment = (BlankFragment) savedInstanceState.getParcelable("musicFrag");
         movieFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("movie"));
         podcastFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("podcast"));
 
@@ -185,6 +189,8 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         System.out.println("Music Ref : " + musicFragment);
         System.out.println("Movie Ref : " + movieFragment);
         System.out.println("Podcast Ref : " + podcastFragment);
+
+        System.out.println(musicFragment.mType);
 
         viewPagerAdapter.addFragment(musicFragment,"Music");
         viewPagerAdapter.addFragment(movieFragment,"Movies");
