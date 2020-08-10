@@ -34,33 +34,17 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
     private EditText searchText;
     HashMap<String, String> map;
 
-    /*public static ArrayList<SongInfoModel> music = new ArrayList<>();
-    public static ArrayList<SongInfoModel> movie = new ArrayList<>();
-    public static ArrayList<SongInfoModel> podcast = new ArrayList<>();*/
     ViewPagerAdapter viewPagerAdapter;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //System.out.println(savedInstanceState.getString("music"));
-
         super.onCreate(savedInstanceState);
 
         map = new HashMap<>();
         setContentView(R.layout.activity_main);
-        /*if(savedInstanceState != null){
-            System.out.println("Recreating");
-            for(String key : savedInstanceState.keySet()){
-                Log.d ("myApplication ", key + " is a key in the bundle");
-            }
-            musicFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(savedInstanceState.getString("music"));
-            movieFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(savedInstanceState.getString("movie"));
-            podcastFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(savedInstanceState.getString("podcast"));
-            System.out.println(musicFragment);
-            System.out.println(movieFragment);
-            System.out.println(podcastFragment);
-        }*/
+
         if(savedInstanceState != null){
             System.out.println("In Main having saved instances");
         }
@@ -75,8 +59,6 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
             final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
             final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
             final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
-
-            //fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
 
             tabLayout.setupWithViewPager(viewPager);
             setupViewPager(viewPager);
@@ -115,10 +97,6 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("stateMap", map);
-        /*outState.putString("musicFragment", musicFragment.toString());
-        outState.putString("movieFragment", movieFragment.toString());
-        outState.putString("podcastFragment", podcastFragment.toString());*/
-        //outState.putParcelable("musicFrag", (Parcelable) musicFragment);
         System.out.println("Saving instances in MainActivity");
     }
 
@@ -134,13 +112,11 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
             Log.d ("myApplication ", key + " is a key in the bundle");
         }
         map = (HashMap<String, String>) savedInstanceState.getSerializable("stateMap");
-        //fragMap = (HashMap<String, BlankFragment>) savedInstanceState.getSerializable("stateMap");
         System.out.println(map.get("music"));
         System.out.println(map.get("movie"));
         System.out.println(map.get("podcast"));
 
         musicFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("music"));
-        //musicFragment = (BlankFragment) savedInstanceState.getParcelable("musicFrag");
         movieFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("movie"));
         podcastFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("podcast"));
 
@@ -152,29 +128,6 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
     }
-
-    /*public void fetchDatafromAPI(String musicURL, String movieURL, String podcastsURL){
-        try {
-            String musicResponse = getApiResponse(musicURL);
-            String movieResponse = getApiResponse(movieURL);
-            String podcastsResponse = getApiResponse(podcastsURL);
-
-            music.clear();
-            movie.clear();
-            podcast.clear();
-
-            convertStringToObjectArray(music, musicResponse);
-            convertStringToObjectArray(movie, movieResponse);
-            convertStringToObjectArray(podcast, podcastsResponse);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        *//*setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);*//*
-        System.out.println("All done");
-    }*/
 
 
     private void setupViewPager(ViewPager viewPager){
@@ -195,8 +148,6 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         viewPagerAdapter.addFragment(podcastFragment,"Podcasts");
 
         viewPager.setAdapter(viewPagerAdapter);
-        /*System.out.println("Fragment = " + getSupportFragmentManager().findFragmentByTag("android:switcher:2131231024:0"));
-        System.out.println(getSupportFragmentManager().getFragments());*/
     }
 
 

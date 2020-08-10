@@ -69,7 +69,7 @@ public class BlankFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("TAG", "Tag: "+this.getTag());
-        //setRetainInstance(true);
+//        setRetainInstance(true);
 
     }
 
@@ -96,9 +96,6 @@ public class BlankFragment extends Fragment {
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
-
     }
 
     @Override
@@ -223,6 +220,7 @@ public class BlankFragment extends Fragment {
     public interface fragment{
         public void sendFragmentState(String key, String value);
     }
+
     public static String getApiResponse(String URL) throws IOException {
         OkHttpClient client = new OkHttpClient();
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
