@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -42,28 +43,23 @@ public class BlankFragment extends Fragment {
     RecyclerView recyclerView;
     ArrayList<SongInfoModel> entityList = new ArrayList<>();
     String mType;
-    int offset=14;
+    String mQuery;
+    int offset=30;
     int scrolledOutItems;
     boolean isScrolling = false;
     SwipeRefreshLayout swipeRefreshLayout;
     String tagValue;
     fragment fr;
+    String res;
+    ArrayList<String> responses = new ArrayList<>();
     public BlankFragment(){
 
     }
 
     public BlankFragment(String type){
         this.mType = type;
+        this.mQuery = type;
     }
-//    public BlankFragment(ArrayList<SongInfoModel> entityObject,String type) {
-//
-//        for(int i=0;i<entityObject.size();i++)
-//        {
-//            entityList.add(entityObject.get(i));
-//        }
-//        mType = type;
-//    }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,14 +81,30 @@ public class BlankFragment extends Fragment {
         this.tagValue = this.getTag();
 
     }
+//
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        System.out.println("Detaching: "+this.tagValue);
+//    }
+
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        System.out.println("Destroying: "+this.tagValue);
+//    }
 
     //Using onResume function for data fetching
     @Override
     public void onResume() {
+        System.out.println("I am here! "+mQuery+","+mType);
         super.onResume();
         try {
-            String res = getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=14"); // change limit to 30
-            convertStringToObjectArray(entityList, res);
+            if(mType!=null) {
+                this.res = getApiResponse("https://itunes.apple.com/search?term=" + mQuery + "&media=" + mType + "&limit=30"); // change limit to 30
+                convertStringToObjectArray(entityList, res);
+                responses.add(res);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -101,10 +113,18 @@ public class BlankFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(mType, this.getTag());
+        outState.putString("type",mType);
+        outState.putString("query",mQuery);
+//        outState.putString("name","auto2");
+      //  outState.putString("response",res);
+        System.out.println("entity000: "+responses.size());
+        for(String t: responses)
+            Log.d("Debugging: ",t);
+
+        outState.putStringArrayList("responses",responses);
         System.out.println("Putting state of " + mType);
         super.onSaveInstanceState(outState);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,10 +132,24 @@ public class BlankFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.d("onCreateView", this + " " + this.mType);
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
-        if(savedInstanceState != null)
-            for(String key : savedInstanceState.keySet()){
-                Log.d ("myFragment ", key + " is a key in the bundle");
+        if(savedInstanceState != null){
+            mType=savedInstanceState.getString("type");
+            mQuery=savedInstanceState.getString("query");
+//            Toast.makeText(getContext(), ""+savedInstanceState.getString("name"), Toast.LENGTH_SHORT).show();
+            if(savedInstanceState.getStringArrayList("responses")!=null){
+                System.out.println("Yes, break!");
             }
+            entityList.clear();
+            for(String ent: savedInstanceState.getStringArrayList("responses")){
+                convertStringToObjectArray(entityList, ent);
+                System.out.println("-------------------------------------------");
+                System.out.println(ent);
+                System.out.println("-------------------------------------------");
+            }
+            System.out.println("entity00: "+entityList.size());
+            System.out.println("entity0: "+savedInstanceState.getStringArrayList("responses").size());
+//            refreshFragemnt();
+        }
 
         mLayoutInflater=inflater;
         mContainer=container;
@@ -126,17 +160,19 @@ public class BlankFragment extends Fragment {
             @Override
             public void onRefresh() {
 
+                offset=30;
                 MainActivity obj = new MainActivity();
-                int max = 14;
-                int min = 7;
+                int max = 20;
+                int min = 10;
                 int range = max - min + 1;
                 int offsetOnRefresh = (int) (Math.random() * range) + min;
                 try {
-                    String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=14&offset="+offsetOnRefresh);
+                    String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+mQuery+"&media="+mType+"&limit=30&offset="+offsetOnRefresh);
                     entityList.clear();
+                    responses.clear();
+                    responses.add(entityResponse);
                     obj.convertStringToObjectArray(entityList, entityResponse);
                     refreshFragemnt();
-
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -158,11 +194,15 @@ public class BlankFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 scrolledOutItems = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
-                if(isScrolling && (scrolledOutItems % 7 == 0) || (scrolledOutItems % 12 == 0)){
-                    offset+=7;
+//                if(isScrolling && (scrolledOutItems % 7 == 0) || (scrolledOutItems % 12 == 0)){
+                Log.d("TAG", "onScrolled: "+(scrolledOutItems+20)+", offset: "+offset);
+                if(isScrolling && ((scrolledOutItems+20) > offset)){
+                    offset+=10;
                     try {
-                        String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=7&offset="+offset);
+                        String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+mQuery+"&media="+mType+"&limit=10&offset="+offset);
                         convertStringToObjectArray(entityList, entityResponse);
+                        responses.add(entityResponse);
+                        refreshFragemnt();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -192,13 +232,8 @@ public class BlankFragment extends Fragment {
         System.out.println("Activity created, list populated " + this.mType + " " + this);
     }
     public void refreshFragemnt(){
-        /*BlankFragment fr1 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:0");
-        BlankFragment fr2 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:1");
-        BlankFragment fr3 = (BlankFragment) getFragmentManager().findFragmentByTag("android:switcher:2131231024:2");
-        System.out.println(fr1 + " " + fr1.mType);
-        System.out.println(fr2 + " " + fr2.mType);
-        System.out.println(fr3 + " " + fr3.mType);*/
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (Build.VERSION.SDK_INT >= 26) {
             ft.setReorderingAllowed(false);
         }
@@ -207,9 +242,13 @@ public class BlankFragment extends Fragment {
 
     public void searchQuery(String query){
 
+        mQuery=query;
         try {
-            String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=14");
+            String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=30");
             entityList.clear();
+            responses.clear();
+            responses.add(entityResponse);
+            mQuery = query;
             convertStringToObjectArray(entityList, entityResponse);
             refreshFragemnt();
         }catch (Exception e){
