@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
 
     @Override
     public void sendFragmentState(String key, String value) {
-        Log.d("Frag tag", key + " " + value);
+        //Log.d("Frag tag", key + " " + value);
         map.put(key, value);
     }
 }
