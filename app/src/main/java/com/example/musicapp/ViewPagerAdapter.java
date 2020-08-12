@@ -25,10 +25,12 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return titles.size();
+
+        //return titles.size();
+        return 3;
     }
 
-    public void addFragment(Fragment fragment,String title){
+    public void addFragment(BlankFragment fragment,String title){ //Type changed for fragment
         fragments.add(fragment);
         titles.add(title);
     }
@@ -36,6 +38,21 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles.get(position);
+        String title;
+        switch(position){
+            case 0:
+                title = "Music";
+                break;
+            case 1:
+                title = "Movies";
+                break;
+            case 2:
+                title = "Podcasts";
+                break;
+            default:
+                title = "Null";
+        }
+        //return titles.get(position);
+        return title;
     }
 }

@@ -1,10 +1,12 @@
 package com.example.musicapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,17 +21,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BlankFragment.fragment{
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ImageButton searchButton;
     private EditText searchText;
+    HashMap<String, String> map;
 
-    public static ArrayList<SongInfoModel> music = new ArrayList<>();
-    public static ArrayList<SongInfoModel> movie = new ArrayList<>();
-    public static ArrayList<SongInfoModel> podcast = new ArrayList<>();
     ViewPagerAdapter viewPagerAdapter;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
@@ -37,37 +38,50 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        map = new HashMap<>();
         setContentView(R.layout.activity_main);
+        this.tabLayout = findViewById(R.id.tablayout);
+        this.viewPager = findViewById(R.id.viewPager);
+        this.searchButton = findViewById(R.id.searchButton);
+        this.searchText = findViewById(R.id.searchText);
 
-        tabLayout = findViewById(R.id.tablayout);
-        viewPager = findViewById(R.id.viewPager);
-        searchButton = findViewById(R.id.searchButton);
-        searchText = findViewById(R.id.searchText);
+        if(savedInstanceState != null){
+            System.out.println("In Main having saved instances");
+        }
 
-        final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
-        final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
-        final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
+        else{
 
-        fetchDatafromAPI(musicURL[0], movieURL[0], podcastsURL[0]);
+            System.out.println("Creating for the first time");
+            final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
+            final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
+            final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
+
+            tabLayout.setupWithViewPager(viewPager);
+            setupViewPager(viewPager);
+        }
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int currentFragmentId = viewPager.getCurrentItem();
-                System.out.println("Current Fragment item : " + currentFragmentId);
                 String query = searchText.getText().toString();
-                System.out.println("Search text : " + query);
                 query.replaceAll(" ", "+");
                 query.toLowerCase();
                 switch (currentFragmentId) {
                     case 0:
+                        musicFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("music"));
                         musicFragment.searchQuery(query);
+                        musicFragment.refreshFragemnt();
                         break;
                     case 1:
+                        movieFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("movie"));
                         movieFragment.searchQuery(query);
+                        movieFragment.refreshFragemnt();
                         break;
                     case 2:
+                        podcastFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("podcast"));
                         podcastFragment.searchQuery(query);
+                        podcastFragment.refreshFragemnt();
                         break;
                     default:
                         System.out.println("No fragment found");
@@ -75,40 +89,36 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("stateMap", map);
+        System.out.println("Saving instances in MainActivity");
+    }
 
-    public void fetchDatafromAPI(String musicURL,String movieURL,String podcastsURL){
-        try {
-            String musicResponse = getApiResponse(musicURL);
-            String movieResponse = getApiResponse(movieURL);
-            String podcastsResponse = getApiResponse(podcastsURL);
-
-            music.clear();
-            movie.clear();
-            podcast.clear();
-
-            convertStringToObjectArray(music, musicResponse);
-            convertStringToObjectArray(movie, movieResponse);
-            convertStringToObjectArray(podcast, podcastsResponse);
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        tabLayout = findViewById(R.id.tablayout);
+        viewPager = findViewById(R.id.viewPager);
+        searchButton = findViewById(R.id.searchButton);
+        searchText = findViewById(R.id.searchText);
+        for(String key : savedInstanceState.keySet()){
+            Log.d ("myApplication ", key + " is a key in the bundle");
         }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        setupViewPager(viewPager);
+        map = (HashMap<String, String>) savedInstanceState.getSerializable("stateMap");
         tabLayout.setupWithViewPager(viewPager);
+        setupViewPager(viewPager);
     }
-
 
     private void setupViewPager(ViewPager viewPager){
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),100);
 
-        musicFragment = new BlankFragment(music,"music");
-        movieFragment = new BlankFragment(movie,"movie");
-        podcastFragment = new BlankFragment(podcast,"podcast");
+        musicFragment = new BlankFragment("music");
+        movieFragment = new BlankFragment("movie");
+        podcastFragment = new BlankFragment("podcast");
 
         System.out.println("Music Ref : " + musicFragment);
         System.out.println("Movie Ref : " + movieFragment);
@@ -119,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         viewPagerAdapter.addFragment(podcastFragment,"Podcasts");
 
         viewPager.setAdapter(viewPagerAdapter);
-
     }
 
 
@@ -136,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
+
 
 
     public static void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
@@ -159,5 +169,12 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    @Override
+    public void sendFragmentState(String key, String value) {
+        Log.d("Frag tag", key + " " + value);
+        map.put(key, value);
     }
 }
