@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -50,12 +52,6 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
         }
 
         else{
-
-            System.out.println("Creating for the first time");
-            final String[] musicURL = {"https://itunes.apple.com/search?term=music&media=music&limit=14"};
-            final String[] movieURL = {"https://itunes.apple.com/search?term=movie&media=movie&limit=14"};
-            final String[] podcastsURL = {"https://itunes.apple.com/search?term=podcast&media=podcast&limit=14"};
-
             tabLayout.setupWithViewPager(viewPager);
             setupViewPager(viewPager);
         }
@@ -67,6 +63,11 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
                 String query = searchText.getText().toString();
                 query.replaceAll(" ", "+");
                 query.toLowerCase();
+
+                //keyboard auto hiding
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+
                 switch (currentFragmentId) {
                     case 0:
                         musicFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(map.get("music"));
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
                 }
 
             }
+
         });
     }
 
