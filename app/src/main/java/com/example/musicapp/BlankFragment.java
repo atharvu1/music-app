@@ -97,9 +97,10 @@ public class BlankFragment extends Fragment {
                             res = getApiResponse("https://itunes.apple.com/search?term=" + mQuery + "&media=" + mType + "&limit=30"); // change limit to 30
                             convertStringToObjectArray(entityList, res);
                             responses.add(res);
+                            createdFragment = false;
                             refreshFragemnt();
                         }
-                        createdFragment = false;
+
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -149,21 +150,23 @@ public class BlankFragment extends Fragment {
         swipeRefreshLayout = rootView.findViewById(R.id.pullDownRefresh);
         progressBar = rootView.findViewById(R.id.progressBarFragment);
 
+        if(!createdFragment)
+            progressBar.setVisibility(View.GONE);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 offset=30;
-                MainActivity obj = new MainActivity();
                 int max = 20;
                 int min = 10;
                 int range = max - min + 1;
                 int offsetOnRefresh = (int) (Math.random() * range) + min;
                 try {
-                    String entityResponse = obj.getApiResponse("https://itunes.apple.com/search?term="+mQuery+"&media="+mType+"&limit=30&offset="+offsetOnRefresh);
+                    String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+mQuery+"&media="+mType+"&limit=30&offset="+offsetOnRefresh);
                     entityList.clear();
                     responses.clear();
                     responses.add(entityResponse);
-                    obj.convertStringToObjectArray(entityList, entityResponse);
+                    convertStringToObjectArray(entityList, entityResponse);
                     refreshFragemnt();
                 }catch (Exception e){
                     e.printStackTrace();
@@ -212,6 +215,7 @@ public class BlankFragment extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(entityListAdapter);
+        //progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -226,6 +230,8 @@ public class BlankFragment extends Fragment {
             ft.setReorderingAllowed(false);
         }
         ft.detach(this).attach(this).commit();
+        //changeProgressBarVisibility(false);
+
     }
 
     public void searchQuery(String query){
@@ -242,6 +248,7 @@ public class BlankFragment extends Fragment {
                 responses.add(entityResponse);
                 mQuery = query;
                 convertStringToObjectArray(entityList, entityResponse);
+                //changeProgressBarVisibility(false);
                 refreshFragemnt();
             }
         }catch (Exception e){
