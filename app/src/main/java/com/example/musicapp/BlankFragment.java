@@ -1,7 +1,6 @@
 package com.example.musicapp;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Parcelable;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -31,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 
@@ -69,8 +65,8 @@ public class BlankFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TAG", "Tag: "+this.getTag());
-//        setRetainInstance(true);
+        //Log.d("TAG", "Tag: "+this.getTag());
+        //setRetainInstance(true);
 
     }
 
@@ -86,30 +82,15 @@ public class BlankFragment extends Fragment {
         this.tagValue = this.getTag();
 
     }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        System.out.println("Detaching: "+this.tagValue);
-//    }
-
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        System.out.println("Destroying: "+this.tagValue);
-//    }
 
     //Using onResume function for data fetching
     @Override
     public void onResume() {
-        System.out.println("onResume started " + mType);
-        System.out.println("I am here! "+mQuery+","+mType);
         super.onResume();
         if(createdFragment){
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("data fetching");
                     try {
                         if(mType!=null) {
                             res = getApiResponse("https://itunes.apple.com/search?term=" + mQuery + "&media=" + mType + "&limit=30"); // change limit to 30
@@ -118,7 +99,6 @@ public class BlankFragment extends Fragment {
                             refreshFragemnt();
                         }
                         createdFragment = false;
-                        System.out.println("data fetching finished");
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -126,8 +106,6 @@ public class BlankFragment extends Fragment {
 
             }).start();
         }
-        System.out.println("onResume finished " + mType);
-
     }
 
     @Override
@@ -135,14 +113,10 @@ public class BlankFragment extends Fragment {
         outState.putString(mType, this.getTag());
         outState.putString("type",mType);
         outState.putString("query",mQuery);
-//        outState.putString("name","auto2");
-      //  outState.putString("response",res);
-        System.out.println("entity000: "+responses.size());
         for(String t: responses)
             Log.d("Debugging: ",t);
 
         outState.putStringArrayList("responses",responses);
-        System.out.println("Putting state of " + mType);
         super.onSaveInstanceState(outState);
     }
 
@@ -152,13 +126,16 @@ public class BlankFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.d("onCreateView", this + " " + this.mType);
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
+
         if(savedInstanceState != null){
+
             mType=savedInstanceState.getString("type");
             mQuery=savedInstanceState.getString("query");
-//            Toast.makeText(getContext(), ""+savedInstanceState.getString("name"), Toast.LENGTH_SHORT).show();
+
             if(savedInstanceState.getStringArrayList("responses")!=null){
                 System.out.println("Yes, break!");
             }
+
             entityList.clear();
             for(String ent: savedInstanceState.getStringArrayList("responses")){
                 convertStringToObjectArray(entityList, ent);
@@ -166,9 +143,6 @@ public class BlankFragment extends Fragment {
                 System.out.println(ent);
                 System.out.println("-------------------------------------------");
             }
-            System.out.println("entity00: "+entityList.size());
-            System.out.println("entity0: "+savedInstanceState.getStringArrayList("responses").size());
-//            refreshFragemnt();
         }
 
         mLayoutInflater=inflater;
@@ -176,9 +150,6 @@ public class BlankFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recyclerView);
         swipeRefreshLayout = rootView.findViewById(R.id.pullDownRefresh);
         progressBar = rootView.findViewById(R.id.progressBarFragment);
-        System.out.println("Progress bar " + progressBar);
-        //progressBar.setVisibility(View.VISIBLE);
-        //recyclerView.setVisibility(View.GONE);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -216,8 +187,6 @@ public class BlankFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 scrolledOutItems = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-
-//                if(isScrolling && (scrolledOutItems % 7 == 0) || (scrolledOutItems % 12 == 0)){
                 Log.d("TAG", "onScrolled: "+(scrolledOutItems+20)+", offset: "+offset);
                 if(isScrolling && ((scrolledOutItems+20) > offset)){
                     offset+=10;
@@ -239,7 +208,6 @@ public class BlankFragment extends Fragment {
         return rootView;
     }
 
-
     public void createEntityComponent(ArrayList<SongInfoModel> entityList){
 
         EntityListAdapter entityListAdapter = new EntityListAdapter(getContext(),R.layout.entity_component,entityList);
@@ -252,11 +220,10 @@ public class BlankFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         createEntityComponent(entityList);
-        System.out.println("Activity created, list populated " + this.mType + " " + this);
     }
+
     public void refreshFragemnt(){
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-//        FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (Build.VERSION.SDK_INT >= 26) {
             ft.setReorderingAllowed(false);
         }
@@ -297,7 +264,6 @@ public class BlankFragment extends Fragment {
         return null;
     }
 
-
     public static void convertStringToObjectArray(ArrayList<SongInfoModel> mod, String s){
         try{
             JSONObject obj = new JSONObject(s);
@@ -322,33 +288,3 @@ public class BlankFragment extends Fragment {
     }
 
 }
-
-/*
-class FetchData extends AsyncTask<Void, Void, BlankFragment>{
-
-    @Override
-    protected Void doInBackground(Void... voids) {
-        String mType;
-        String res;
-        String mQuery;
-
-
-        try {
-            if(mType!=null) {
-                res = BlankFragment.getApiResponse("https://itunes.apple.com/search?term=" + mQuery + "&media=" + mType + "&limit=30"); // change limit to 30
-                BlankFragment.convertStringToObjectArray(entityList, res);
-                responses.add(res);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(BlankFragment blankFragment) {
-        super.onPostExecute(blankFragment);
-        blankFragment.refreshFragemnt();
-    }
-}
-*/
