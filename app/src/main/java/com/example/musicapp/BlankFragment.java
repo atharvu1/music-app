@@ -90,9 +90,12 @@ public class BlankFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        System.out.println("On Resume");
         try {
+            //Thread.sleep(10000); // 10 seconds
             String res = getApiResponse("https://itunes.apple.com/search?term="+mType+"&media="+mType+"&limit=14"); // change limit to 30
             convertStringToObjectArray(entityList, res);
+            System.out.println("Data fetched");
         }catch (Exception e){
             e.printStackTrace();
         }
