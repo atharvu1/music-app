@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -113,9 +114,6 @@ public class BlankFragment extends Fragment {
         outState.putString(mType, this.getTag());
         outState.putString("type",mType);
         outState.putString("query",mQuery);
-        for(String t: responses)
-            Log.d("Debugging: ",t);
-
         outState.putStringArrayList("responses",responses);
         super.onSaveInstanceState(outState);
     }
@@ -124,7 +122,7 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d("onCreateView", this + " " + this.mType);
+        //Log.d("onCreateView", this + " " + this.mType);
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
 
         if(savedInstanceState != null){
@@ -187,7 +185,7 @@ public class BlankFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 scrolledOutItems = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-                Log.d("TAG", "onScrolled: "+(scrolledOutItems+20)+", offset: "+offset);
+                //Log.d("TAG", "onScrolled: "+(scrolledOutItems+20)+", offset: "+offset);
                 if(isScrolling && ((scrolledOutItems+20) > offset)){
                     offset+=10;
                     try {
@@ -231,16 +229,21 @@ public class BlankFragment extends Fragment {
     }
 
     public void searchQuery(String query){
-
-        mQuery=query;
         try {
             String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+query+"&media="+mType+"&limit=30");
-            entityList.clear();
-            responses.clear();
-            responses.add(entityResponse);
-            mQuery = query;
-            convertStringToObjectArray(entityList, entityResponse);
-            refreshFragemnt();
+            JSONObject ob = new JSONObject(entityResponse);
+            int count = ob.getInt("resultCount");
+            if(count == 0){
+                Toast.makeText(getContext(), "No result found, Showing previous entries", Toast.LENGTH_LONG).show();
+            }
+            else {
+                entityList.clear();
+                responses.clear();
+                responses.add(entityResponse);
+                mQuery = query;
+                convertStringToObjectArray(entityList, entityResponse);
+                refreshFragemnt();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
