@@ -14,11 +14,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.google.android.material.tabs.TabLayout;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -36,12 +38,33 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
     ViewPagerAdapter viewPagerAdapter;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
+    public static final String MIXPANEL_TOKEN = "78e5dc83dac498d545df38443e37bceb";
+
+    // Initialize the library with your
+    // Mixpanel project token, MIXPANEL_TOKEN, and a reference
+    // to your application context.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         map = new HashMap<>();
         setContentView(R.layout.activity_main);
+
+        /* *******************************************Mix Panel dummy event*******************************************/
+        MixpanelAPI mixpanel = MixpanelAPI.getInstance(this, MIXPANEL_TOKEN);
+
+        JSONObject props = new JSONObject();
+
+        try {
+            props.put("Current Activity", "MainActivity");
+            mixpanel.track("Activity Tracking", props);
+            mixpanel.flush();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        /* *******************************************End***********************************************************/
+
+
         this.tabLayout = findViewById(R.id.tablayout);
         this.viewPager = findViewById(R.id.viewPager);
         this.searchButton = findViewById(R.id.searchButton);
