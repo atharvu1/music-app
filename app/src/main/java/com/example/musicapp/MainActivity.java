@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
     ViewPagerAdapter viewPagerAdapter;
     BlankFragment musicFragment, movieFragment, podcastFragment;
 
-    public static final String MIXPANEL_TOKEN = "78e5dc83dac498d545df38443e37bceb";
+    public static final String MIXPANEL_TOKEN = Token.MIXPANEL_TOKEN;
 
     // Initialize the library with your
     // Mixpanel project token, MIXPANEL_TOKEN, and a reference
