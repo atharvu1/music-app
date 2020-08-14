@@ -17,7 +17,9 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
     Context mContext;
     int mResource;
     SongInfoModel songInfoModel;
-
+    Button artistName;
+    Button albumName;
+    View view;
     public EntityListAdapter(Context context, int resource, ArrayList<SongInfoModel> entityList){
         mEntityList = entityList;
         mContext = context;
@@ -27,10 +29,19 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
     @NonNull
     @Override
     public EntityHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(mResource,parent,false);
-        Button artistName = view.findViewById(R.id.artistName);
-        Button albumName = view.findViewById(R.id.albumName);
+        view = LayoutInflater.from(parent.getContext()).inflate(mResource,parent,false);
 
+
+        return new EntityHolder(mContext,view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull EntityHolder holder, int position) {
+        final int pos = position;
+        this.songInfoModel = mEntityList.get(position);
+        holder.bindEntity(songInfoModel);
+        artistName = view.findViewById(R.id.artistName);
+        albumName = view.findViewById(R.id.albumName);
 
         if(mContext.getClass().getSimpleName().equals("DetailedActivity")){
             artistName.setEnabled(false);
@@ -41,7 +52,7 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(mContext.getApplicationContext(), DetailedActivity.class);
-                String artist = songInfoModel.getArtistName();
+                String artist = mEntityList.get(pos).getArtistName();
                 i.putExtra("value", artist);
                 i.putExtra("title","Artist Tracks");
                 mContext.startActivity(i);
@@ -52,20 +63,12 @@ class EntityListAdapter extends RecyclerView.Adapter<EntityHolder> {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(mContext.getApplicationContext(), DetailedActivity.class);
-                String album = songInfoModel.getCollectionName();
+                String album = mEntityList.get(pos).getCollectionName();
                 i.putExtra("value", album);
                 i.putExtra("title","Album Tracks");
                 mContext.startActivity(i);
             }
         });
-
-        return new EntityHolder(mContext,view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull EntityHolder holder, int position) {
-        this.songInfoModel = mEntityList.get(position);
-        holder.bindEntity(songInfoModel);
     }
 
 

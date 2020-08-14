@@ -21,11 +21,13 @@ import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -53,6 +55,8 @@ public class BlankFragment extends Fragment {
     ArrayList<String> responses = new ArrayList<>();
     boolean createdFragment;
     ProgressBar progressBar;
+    MixpanelAPI mixpanelAPI = MainActivity.mixpanel;
+
     public BlankFragment() {
         createdFragment = true;
     }
@@ -160,7 +164,7 @@ public class BlankFragment extends Fragment {
                 int max = 20;
                 int min = 10;
                 int range = max - min + 1;
-                int offsetOnRefresh = (int) (Math.random() * range) + min;
+                int offsetOnRefresh = 0;
                 try {
                     String entityResponse = getApiResponse("https://itunes.apple.com/search?term="+mQuery+"&media="+mType+"&limit=30&offset="+offsetOnRefresh);
                     entityList.clear();
@@ -169,6 +173,15 @@ public class BlankFragment extends Fragment {
                     convertStringToObjectArray(entityList, entityResponse);
                     refreshFragemnt();
                 }catch (Exception e){
+                    e.printStackTrace();
+                }
+                try {
+                    JSONObject props = new JSONObject();
+                    props.put("Current Query", mQuery);
+                    props.put("Media Type", mType);
+                    mixpanelAPI.track("Refresh Event", props);
+                    mixpanelAPI.flush();
+                }catch (JSONException e){
                     e.printStackTrace();
                 }
                 swipeRefreshLayout.setRefreshing(false);
@@ -251,6 +264,13 @@ public class BlankFragment extends Fragment {
                 //changeProgressBarVisibility(false);
                 refreshFragemnt();
             }
+            JSONObject props = new JSONObject();
+            props.put("Current Query", query);
+            props.put("Media Type", mType);
+            props.put("Result Count", count);
+            mixpanelAPI.track("Search Event", props);
+            mixpanelAPI.flush();
+
         }catch (Exception e){
             e.printStackTrace();
         }

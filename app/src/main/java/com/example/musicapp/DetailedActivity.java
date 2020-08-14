@@ -10,6 +10,11 @@ import android.os.Bundle;;
 import android.widget.AbsListView;
 import android.widget.TextView;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class DetailedActivity extends AppCompatActivity {
@@ -22,7 +27,7 @@ public class DetailedActivity extends AppCompatActivity {
     int scrolledOutItems;
     boolean isScrolling = false;
 
-
+    MixpanelAPI mixpanelAPI = MainActivity.mixpanel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,15 +38,29 @@ public class DetailedActivity extends AppCompatActivity {
         Intent i = getIntent();
         title.setText(i.getStringExtra("title"));
         String s = i.getStringExtra("value");
+
+        try {
+            JSONObject props = new JSONObject();
+            props.put("Type", i.getStringExtra("title"));
+            props.put("Search Keyword", s);
+            mixpanelAPI.track("Detailed Activity Track", props);
+            mixpanelAPI.flush();
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
         s = s.replaceAll(" ", "+");
         s = s.toLowerCase();
-        String URL = "https://itunes.apple.com/search?term="+ s +"&limit=14";
+        String URL = "https://itunes.apple.com/search?term="+ s +"&limit=30";
         try {
             String res = MainActivity.getApiResponse(URL);
             MainActivity.convertStringToObjectArray(model, res);
         }catch (Exception e){
             e.printStackTrace();
         }
+
+
 
         listView = findViewById(R.id.listViewSpecific);
 
@@ -79,6 +98,7 @@ public class DetailedActivity extends AppCompatActivity {
                 isScrolling=false;
             }
         });
+
 
     }
 }
