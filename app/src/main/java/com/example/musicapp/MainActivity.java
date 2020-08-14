@@ -5,6 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -14,11 +19,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.google.android.material.tabs.TabLayout;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -35,13 +42,41 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
 
     ViewPagerAdapter viewPagerAdapter;
     BlankFragment musicFragment, movieFragment, podcastFragment;
+    static MixpanelAPI mixpanel;
+    public static final String MIXPANEL_TOKEN = Token.MIXPANEL_TOKEN;
 
+    // Initialize the library with your
+    // Mixpanel project token, MIXPANEL_TOKEN, and a reference
+    // to your application context.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         map = new HashMap<>();
         setContentView(R.layout.activity_main);
+
+        /* *******************************************Mix Panel dummy event*******************************************/
+        mixpanel = MixpanelAPI.getInstance(this, MIXPANEL_TOKEN);
+        try {
+            JSONObject props = new JSONObject();
+            props.put("User Name", Token.USERNAME);
+            mixpanel.registerSuperProperties(props);
+            props.put("Current Activity", "MainActivity");
+            String orientation = "";
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                orientation = "PORTRAIT";
+            } else {
+                orientation = "LANDSCAPE";
+            }
+            props.put("Initial Orientation", orientation);
+            mixpanel.track("Activity Tracking", props);
+            mixpanel.flush();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        /* *******************************************End***********************************************************/
+
+
         this.tabLayout = findViewById(R.id.tablayout);
         this.viewPager = findViewById(R.id.viewPager);
         this.searchButton = findViewById(R.id.searchButton);
@@ -55,6 +90,33 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
             tabLayout.setupWithViewPager(viewPager);
             setupViewPager(viewPager);
         }
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                //System.out.println("Tab Selected " + tab.getPosition());
+                String tabName = (String) viewPagerAdapter.getPageTitle(tab.getPosition());
+                JSONObject props = new JSONObject();
+                try {
+                    props.put("Current Tab",tabName );
+                    mixpanel.track("Tab Switch Event", props);
+                    mixpanel.flush();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,5 +240,11 @@ public class MainActivity extends AppCompatActivity implements BlankFragment.fra
     public void sendFragmentState(String key, String value) {
         //Log.d("Frag tag", key + " " + value);
         map.put(key, value);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mixpanel.flush();
+        super.onDestroy();
     }
 }
